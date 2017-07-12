@@ -1,0 +1,73 @@
+<div>
+    <div class="remodal" data-remodal-id="crawl_scheduler">
+        <button data-remodal-action="cancel" class="remodal-close"></button>
+
+        <h1 class="subtitle"><i class="fa fa-clock-o"></i> Schedule crawl</h1>
+
+        <template v-if="! isLoaded">
+            <div class="loader">
+                <ul class="loader__steps">
+                    <li v-for="item in loadingItems" v-if="'pending' !== item.status">
+                        <i class="fa fa-cog fa-spin fa-fw" v-if="'loading' == item.status"></i>
+                        <i class="fa fa-check fa-fw" v-if="'complete' == item.status"></i>
+                        {{ item.description }}
+                    </li>
+                </ul>
+            </div>
+        </template>
+
+        <template v-else>
+            <div class="alert alert--info">
+                <p>Here you may manually schedule a crawl for this asset. By default, this asset will be automatically crawled once a day. Manually scheduled crawls are executed as soon as possible.</p>
+            </div>
+
+            <form class="form" v-on:submit.prevent="create()">
+                <label for="asset">Asset</label>
+                <select name="asset" v-model="selectedAssetId">
+                    <option v-bind:value="null">Select an asset...</option>
+                    <option v-for="asset in assets" v-bind:value="asset.id">{{ asset.name }}</option>
+                </select>
+                <template v-if="this.selectedAsset">
+                    <label for="crawler">
+                        Crawler(s)&nbsp;&nbsp;
+                        <a href="#" v-on:click.prevent="selectAllCrawlers()">Select all</a> / <a href="#" v-on:click.prevent="deselectAllCrawlers()">Deselect all</a>
+                    </label>
+                    <div class="form__checkboxes">
+                        <template v-for="crawler in crawlers">
+                            <label v-bind:class="{ 'is-selected': isCrawlerSelected(crawler.id) }">
+                                <input type="checkbox" v-model="selectedCrawlers" v-bind:value="crawler.id" />
+                                <platform-ident :platform="crawler.platform"></platform-ident>
+                            </label>
+                        </template>
+                    </div>
+                    <label for="keywords">
+                        Keywords(s)&nbsp;&nbsp;
+                        <a href="#" v-on:click.prevent="selectAllKeywords()">Select all</a> / <a href="#" v-on:click.prevent="deselectAllKeywords()">Deselect all</a>
+                    </label>
+                    <div class="form__checkboxes">
+                        <template v-for="keyword in selectedAsset.keywords">
+                            <label v-bind:class="{ 'is-selected': isKeywordSelected(keyword) }">
+                                <input type="checkbox" v-model="selectedKeywords" v-bind:value="keyword.id" />
+                                {{ keyword.keyword }}
+                            </label>
+                        </template>
+                    </div>
+                    <label for="mode">Mode</label>
+                    <div class="form__select">
+                        <select name="mode" v-model="mode">
+                            <option v-for="mode in ['light','heavy']" v-bind:value="mode">{{ getModeDescription(mode) }}</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="form__button form__button--spaced">
+                        <template v-if="isScheduling">
+                            <i class="fa fa-cog fa-spin"></i> Scheduling crawl
+                        </template>
+                        <template v-else>
+                            Schedule crawl
+                        </template>
+                    </button>
+                </template>
+            </form>
+        </template>
+    </div>
+</div>

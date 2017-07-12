@@ -1,0 +1,148 @@
+<div>
+    <template v-if="crawl">
+        <div class="grid">
+
+            <!-- Crawling status bar -->
+            <div class="grid__col l-full" v-if="'crawling' == crawl.generatedStatus">
+                <div class="panel panel--flush">
+                    <div class="progress-bar">
+                        <template v-if="0 < crawl.submission_count">
+                            <div class="progress-bar__progress" v-bind:style="{ width: Math.round(crawl.submission_count / crawl.predicted_count * 100) + '%' }">
+                                {{ Math.round(crawl.submission_count / crawl.predicted_count * 100) }}%
+                                <span class="muted">({{ crawl.submission_count + '/' + crawl.predicted_count }})</span>
+                            </div>
+                        </template>
+                        <div class="progress-bar__negative" v-else style="width: 100%;">
+                            <span class="muted"><i class="fa fa-cog fa-spin"></i> Just getting started...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Processing status bar -->
+            <div class="grid__col l-full" v-if="'processing' == crawl.generatedStatus">
+                <div class="panel panel--flush">
+                    <div class="progress-bar">
+                        <template v-if="0 < (crawl.accepted_count + crawl.rejected_count)">
+                            <div class="progress-bar__progress" v-bind:style="{ width: Math.round((crawl.accepted_count + crawl.rejected_count) / crawl.submission_count * 100) + '%' }">
+                                {{ Math.round((crawl.accepted_count + crawl.rejected_count) / crawl.submission_count * 100) }}%
+                                <span class="muted">({{ (crawl.accepted_count + crawl.rejected_count) + '/' + crawl.submission_count }})</span>
+                            </div>
+                        </template>
+                        <div class="progress-bar__negative" v-else style="width: 100%;">
+                            <span class="muted"><i class="fa fa-cog fa-spin"></i> Just getting started...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main crawl details -->
+            <div class="grid__col l-one-third">
+
+                <div class="panel panel--jumbo-status">
+                    <status-badge :states="statuses" :colors="statusColors" :code="crawl.generatedStatus" type="crawl" :id="crawl.id">
+                </div>
+
+                <div class="panel panel--push">
+                    <h2 class="subtitle"><i class="fa fa-search"></i> Details</h2>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th style="width: 100px;">ID</th>
+                                <td>{{ paddedId(crawl.id) }}</td>
+                            </tr>
+                            <tr>
+                                <th>Crawler</th>
+                                <td>
+                                    <router-link to="{ path: '/admin/crawlers/'+crawl.crawler.id }">
+                                        {{ paddedId(crawl.crawler.id) }}
+                                    </router-link>
+                                    ({{ crawl.crawler.platform }})
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Asset</th>
+                                <td>
+                                    <router-link to="{ path: '/admin/assets/'+crawl.asset.id }">
+                                        {{ crawl.asset.name }}
+                                    </router-link>
+                                    ({{ crawl.asset.account.name }})
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Predicted Count</th>
+                                <td>{{ crawl.predicted_count }}</td>
+                            </tr>
+                            <tr>
+                                <th>Submission Count</th>
+                                <td>{{ crawl.submission_count }}</td>
+                            </tr>
+                            <tr>
+                                <th>Accepted Count</th>
+                                <td>{{ crawl.accepted_count }}</td>
+                            </tr>
+                            <tr>
+                                <th>Rejected Count</th>
+                                <td>{{ crawl.rejected_count }}</td>
+                            </tr>
+                            <tr>
+                                <th>Crawl Duration</th>
+                                <td>{{ crawlDurationHuman ? crawlDurationHuman : 'Unknown' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Crawl Started at</th>
+                                <td>{{ crawlStartedAt ? crawlStartedAt.format('ddd D MMM, h:mma') : 'Unstarted' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Crawl Ended at</th>
+                                <td>{{ crawlEndedAt ? crawlEndedAt.format('ddd D MMM, h:mma') : 'Unfinished' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td><status-badge :states="statuses" :colors="statusColors" :code="crawl.generatedStatus" type="crawl" :id="crawl.id"></status-badge></td>
+                            </tr>
+                            <tr v-if="shouldShowCancel()">
+                                <th>Cancel</th>
+                                <td>
+                                    <a href="#" v-on:click.prevent="cancel()" class="button button--mini button--danger">
+                                        <i class="fa fa-cog fa-spin" v-if="isCancelling"></i>
+                                        <i class="fa fa-times" aria-hidden="true" v-else></i>
+                                        Cancel
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="grid__col l-two-thirds">
+                <div class="panel panel--flush">
+                    <h2 class="subtitle"><i class="fa fa-terminal" aria-hidden="true"></i> Console output</h2>
+
+
+                    <template v-if="crawlLog.loading">
+                        <div class="alert">
+                            <p><i class="fa fa-cog fa-spin"></i> Fetching crawl log...</p>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <div class="console-output" id="console_output" v-if="crawlLog.log">
+                            <pre>{{ crawlLog.log }}</pre>
+                        </div>
+                        <div class="alert alert--danger" v-else>
+                            <p><i class="fa fa-times" aria-hidden="true"></i> No log available for this crawl</p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template v-else>
+        <div class="panel panel--flush">
+            <div class="loader">
+                <i class="fa fa-cog fa-spin"></i><br />
+                Fetching crawl...
+            </div>
+        </div>
+    </template>
+</div>

@@ -1,0 +1,80 @@
+<div>
+    <div class="remodal" data-remodal-id="filters">
+        <button data-remodal-action="cancel" class="remodal-close"></button>
+
+        <h1 class="subtitle">
+            <div class="subtitle__options">
+                <a href="#" v-on:click.prevent="closeModal()">Save filters</a>
+                <a href="#" v-on:click.prevent="clearFilters()" class="danger">Reset all</a>
+            </div>
+            Filters
+        </h1>
+
+        <form action="#" method="get" class="form" v-on:submit.prevent="closeModal()">
+            <div class="grid">
+                <div class="grid__col l-one-half" v-if="! isHidden('asset')">
+                    <div class="form__select">
+                        <label for="asset"><i class="fa fa-tag"></i> Assets</label>
+                        <multiselect id="asset" v-model="scope.filters.asset" :options="scope.filterOptions.asset" :multiple="true" label="label" track-by="id" :searchable="true" :close-on-select="false" :loading="searchLoading.asset" @search-change="searchFilterOptions" placeholder="Select an asset"></multiselect>
+                    </div>
+                </div>
+                <div class="grid__col l-one-half" v-if="! isHidden('platform')">
+                    <div class="form__select">
+                        <label for="platform"><i class="fa fa-shopping-bag"></i> Platform</label>
+                        <multiselect id="platform" v-model="scope.filters.platform" :options="scope.filterOptions.platform" :multiple="true" label="label" track-by="id" :close-on-select="false" placeholder="Select a platform"></multiselect>
+                    </div>
+                </div>
+                <div class="grid__col l-one-half" v-if="! isHidden('category')">
+                    <div class="form__select">
+                        <label for="category">
+                            <span v-if="'loaded' == categoriesStatus" class="pull-right">
+                                Begin searching
+                                <i class="fa fa-arrow-down"></i>
+                            </span>
+                            <span v-if="'loading' == categoriesStatus" class="pull-right">
+                                Loading categories
+                                <i class="fa fa-cog fa-spin"></i>
+                            </span>
+                            <a href="#" v-on:click.prevent="loadCategories" class="pull-right icon-link" v-if="null == categoriesStatus">
+                                <span>Load all categories</span>
+                                <i class="fa fa-download"></i>
+                            </a>
+                            <i class="fa fa-bookmark"></i> Category
+                        </label>
+                        <multiselect v-model="scope.filters.category" :options="scope.filterOptions.category" label="label" track-by="id" :multiple="true" :taggable="true" @tag="addCategoryTag" placeholder="Search a category"></multiselect>
+                    </div>
+                </div>
+                <div class="grid__col l-one-half" v-if="! isHidden('status')">
+                    <div class="form__select">
+                        <label for="status"><i class="fa fa-check-circle-o"></i> Status</label>
+                        <multiselect id="status" v-model="scope.filters.status" :options="scope.filterOptions.status" :multiple="true" label="label" track-by="id" :close-on-select="false" placeholder="Select a status"></multiselect>
+                    </div>
+                </div>
+                <div class="grid__col l-one-half" v-if="! isHidden('seller')">
+                    <div class="form__select">
+                        <label for="seller"><i class="fa fa-user-secret"></i> Seller</label>
+                        <multiselect id="seller" v-model="scope.filters.seller" :options="scope.filterOptions.seller" :multiple="true" label="label" track-by="id" :searchable="true" :close-on-select="false" :loading="searchLoading.seller" @search-change="searchFilterOptions" placeholder="Search a seller"></multiselect>
+                    </div>
+                </div>
+                <div class="grid__col l-one-half" v-if="! isHidden('origin')">
+                    <div class="form__select">
+                        <label for="origin"><i class="fa fa-globe"></i> Origin</label>
+                        <multiselect v-model="scope.filters.origin" :options="scope.filterOptions.origin" :multiple="true" :taggable="true" @tag="addOriginTag" placeholder="Search an origin"></multiselect>
+                    </div>
+                </div>
+                <div class="grid__col l-one-half" v-if="! isHidden('keyword')">
+                    <div class="form__select">
+                        <label for="query"><i class="fa fa-search" aria-hidden="true"></i> Listing title</label>
+                        <multiselect v-model="scope.filters.query" :options="scope.filterOptions.query" :multiple="true" :taggable="true" @tag="addQueryTag" placeholder="Search a title"></multiselect>
+                    </div>
+                </div>
+                <div class="grid__col l-one-half" v-if="! isHidden('price')">
+                    <div class="form__select">
+                        <label for="price"><i class="fa fa-usd"></i> Price range</label>
+                        <input name="price_from" class="form__input form__input--inline" placeholder="From" v-model="scope.ranges.price.from" /> to <input name="price_to" class="form__input form__input--inline" placeholder="To" v-model="scope.ranges.price.to" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

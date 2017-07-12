@@ -1,0 +1,44 @@
+<div>
+    <div class="remodal" data-remodal-id="password_resetter">
+        <button data-remodal-action="cancel" class="remodal-close"></button>
+
+        <h1 class="subtitle"><i class="fa fa-unlock"></i> Reset password</h1>
+
+        <div class="alert alert--error" v-if="errors.length">
+            <ul>
+                <li v-for="error in errors">{{ error }}</li>
+            </ul>
+        </div>
+
+        <template v-if="temporaryPassword">
+            <div class="alert alert--success">
+                <i class="fa fa-check"></i>
+                Password reset successfully.
+            </div>
+
+            <div class="alert alert--info">
+                <p>Below you will find an automatically generated password for this user. You should pass it on to them and they should change it after logging in.</p>
+                <p class="large">{{ temporaryPassword }}</p>
+                <p>This password will not be displayed again.</p>
+            </div>
+            <a v-on:click.prevent="complete()" class="button">Complete</a>
+        </template>
+
+        <template v-else>
+            <div class="alert alert--warning">
+                <i class="fa fa-exclamation-triangle"></i>
+                Pressing "reset password" below will generate a random new password for the user. You will see this password once on the next screen. You should provide the password to the user and instruct them to change if after logging in.
+            </div>
+
+            <a href="#" v-on:click.prevent="resetPassword()" class="button">
+                <template v-if="isResetting">
+                    <i class="fa fa-cog fa-spin"></i> Resetting password
+                </template>
+                <template v-else>
+                    Reset password
+                </template>
+            </a>
+            <a href="#" v-on:click.prevent="closeModal()" class="secondary-button">Cancel</a>
+        </template>
+    </div>
+</div>

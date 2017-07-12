@@ -1,0 +1,19 @@
+<div :class="classStr">
+    <a href="#" v-on:click.prevent="close" class="message-overlay__close"><i class="fa fa-times"></i></a>
+    <!-- <div class="message-overlay__timer" v-if="timer !== null">{{ timer }}</div> -->
+    <div class="message-overlay__icon"><i :class="iconClassStr"></i></div>
+    <p class="message-overlay__message">
+        {{ message }}
+        <span v-if="canUndo()">
+            &nbsp;&nbsp;&nbsp;
+            <a href="#" v-on:click.prevent="undo()">
+                <template v-if="isUndoing">
+                    <i class="fa fa-cog fa-spin"></i> Undoing
+                </template>
+                <template v-else>
+                    <i class="fa fa-undo"></i> Undo
+                </template>
+            </a>
+        </span>
+    </p>
+</div>

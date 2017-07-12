@@ -1,0 +1,30 @@
+<header class="subheader">
+    <div class="container">
+        <h1 class="subheader__title">{{ title }}</h1>
+        <div class="subheader__right" v-if="shouldShowGeneratorButtons()">
+            <template v-if="reportUrl">
+                <a :href="reportUrl" class="button button--mini" target="_blank">
+                    <i class="fa fa-download" aria-hidden="true"></i>
+                    Download Report
+                </a>
+            </template>
+            <a href="#" class="button button--mini" @click.prevent="$root.bus.$emit('downloadReport')" v-else>
+                <template v-if="downloadingReport">
+                    <i class="fa fa-cog fa-spin fa-fw"></i>
+                    Generating Report
+                </template>
+                <template v-else>
+                    <i class="fa fa-download" aria-hidden="true"></i>
+                    Generate Report
+                </template>
+            </a>
+        </div>
+        <nav class="subheader__nav">
+            <router-link to="/reports/summary">
+                <i class="fa fa-th"></i> Summary
+            </router-link>
+            <router-link to="/reports/log">Report Log</router-link>
+            <router-link to="/reports/generate">Generate Report</router-link>
+        </nav>
+    </div>
+</header>

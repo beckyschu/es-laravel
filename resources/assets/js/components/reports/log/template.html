@@ -1,0 +1,99 @@
+<div class="panel panel--listing">
+    <section class="data-summary">
+        <p v-if="isLoading">Please wait...</p>
+        <p v-else>{{ reports.length }} reports found</p>
+
+        <nav class="data-summary__actions">
+            <div class="data-summary__action-group" v-if="this.selected.length">
+                <a href="#" @click.prevent="downloadReports" class="data-summary__action--blue" v-if="massDownloadAvailable()">
+                    <template v-if="isDownloading">
+                        <i class="fa fa-cog fa-spin"></i>
+                        Downloading Report{{ 1 < this.selected.length ? 's' : null }}
+                    </template>
+                    <template v-else>
+                        <i class="fa fa-download"></i>
+                        Download Report{{ 1 < this.selected.length ? 's' : null }}
+                    </template>
+                </a>
+                <a href="#" @click.prevent="deleteReports" class="data-summary__action--red">
+                    <template v-if="isDeleting">
+                        <i class="fa fa-cog fa-spin"></i>
+                        Deleting Report{{ 1 < this.selected.length ? 's' : null }}
+                    </template>
+                    <template v-else>
+                        <i class="fa fa-trash"></i>
+                        Delete Report{{ 1 < this.selected.length ? 's' : null }}
+                    </template>
+                </a>
+            </div>
+        </nav>
+    </section>
+
+    <table class="table table--with-base-summary">
+        <thead>
+            <tr>
+                <th class="table__free" style="width: 20px;"></th>
+                <th class="table__free center" style="width: 20px;">
+                    <a href="#" v-on:click.prevent="toggleAll()">
+                        <i class="fa fa-check-square-o" v-if="reports.length && selected.length == reports.length"></i>
+                        <i class="fa fa-square-o" v-else></i>
+                    </a>
+                </th>
+                <th class="table__free center" style="width: 70px;">Status</th>
+                <th class="table__sort-header table__sort-header--static table__sort-header--DESC">Report #</th>
+                <th style="width: 200px;">Date Range</th>
+                <th style="width: 100px;">Discovered Listings</th>
+                <th style="width: 100px;">Pending Listings</th>
+                <th style="width: 100px;">Closed Listings</th>
+                <th style="width: 40px;" class="center">View</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-if="isLoading">
+                <td colspan="9" class="table__loading">
+                    <i class="fa fa-cog fa-spin"></i><br />
+                    Fetching reports...
+                </td>
+            </tr>
+            <template v-else>
+                <template v-if="reports.length">
+                    <tr v-for="(report, key) in reports">
+                        <td class="table__free center">{{ key + 1 }}</td>
+                        <td class="table__free center">
+                            <a href="#" v-on:click.prevent="toggle(report.id)">
+                                <i class="fa fa-square-o" v-if="! selected.includes(report.id)"></i>
+                                <i class="fa fa-check-square-o" v-cloak v-else></i>
+                            </a>
+                        </td>
+                        <td class="table__free table__fill-container center">
+                            <status-badge :states="{ no: 'Not ready', yes: 'Ready' }" :colors="{ no: 'rgb(175,88,99)', yes: 'rgb(0,104,187)' }" :code="!! report.pdf ? 'yes' : 'no'" :fill="true"></status-badge>
+                        </td>
+                        <td>{{ report.sequence <= 9999 ? ("000" + report.sequence).slice(-4) : report.sequence }}</td>
+                        <td>{{ report.date_range }}</td>
+                        <td>{{ report.discovered_listings }}</td>
+                        <td>{{ report.pending_listings }}</td>
+                        <td>{{ report.closed_listings }}</td>
+                        <td class="center">
+                            <a @click.prevent="$router.push('/reports/log/' + report.id)" :href="'/reports/log/' + report.id" class="row-button">
+                                <i class="fa fa-info" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </template>
+                <template v-else>
+                    <tr>
+                        <td colspan="9" class="table__empty">
+                            <i class="fa fa-bookmark-o"></i><br />
+                            Looks like there's nothing here.
+                        </td>
+                    </tr>
+                </template>
+            </template>
+        </tbody>
+    </table>
+
+    <section class="data-summary">
+        <p v-if="isLoading">Please wait...</p>
+        <p v-else>{{ reports.length }} reports found</p>
+    </section>
+</div>

@@ -1,0 +1,96 @@
+<div>
+    <template v-if="crawler">
+        <div class="grid">
+            <div class="grid__col l-one-third">
+                <div class="panel">
+                    <h2 class="subtitle"><i class="fa fa-search"></i> Details</h2>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th style="width: 160px;">ID</th>
+                                <td>{{ paddedId(crawler.id) }}</td>
+                            </tr>
+                            <tr>
+                                <th>Platform</th>
+                                <td><platform-ident :platform="crawler.platform"></platform-ident></td>
+                            </tr>
+                            <tr>
+                                <th>ParseHub Project Token</th>
+                                <td>{{ crawler.parsehub_project_token ? crawler.parsehub_project_token : 'n/a' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>
+                                    <status-badge :states="statuses" :colors="statusColors" :code="crawler.status" type="crawlers" :id="id"></status-badge>
+                                    <template v-if="'failure' == crawler.status || 'timeout' == crawler.status">
+                                        <span v-if="isClearing">&nbsp;&nbsp;<i class="fa fa-cog fa-spin"></i></span>
+                                        <span v-else>&nbsp;&nbsp;<a href="#" v-on:click.prevent="clearFailure()">Clear failure</a></span>
+                                    </template>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>API Token</th>
+                                <td><a href="#" v-on:click.prevent="openTokenGenerator()" class="row-button"><i class="fa fa-key" aria-hidden="true"></i></a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="grid__col l-two-thirds">
+                <div class="panel panel--flush">
+                    <h2 class="subtitle"><i class="fa fa-binoculars" aria-hidden="true"></i> Latest crawls</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Asset</th>
+                                <th>Keyword</th>
+                                <th>Submissions</th>
+                                <th>Accepted</th>
+                                <th>Time Completed</th>
+                                <th style="width: 100px;">Status</th>
+                                <th style="width: 40px;" class="center">Info</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template v-if="crawler.crawls.length">
+                                <tr v-for="crawl in crawler.crawls">
+                                    <td>
+                                        <router-link :to="{ path: '/admin/assets/'+crawl.asset.id }">
+                                            {{ crawl.asset.name }}
+                                        </router-link>
+                                        ({{ crawl.account.name }})
+                                    </td>
+                                    <td>{{ crawl.keyword }}</td>
+                                    <td>{{ crawl.submission_count }}</td>
+                                    <td>{{ crawl.accepted_count }}</td>
+                                    <td>{{ formatDate(crawl.crawl_ended_at) }}</td>
+                                    <td>
+                                        <status-badge :states="crawlStatuses" :colors="crawlStatusColors" :code="crawl.generatedStatus"></status-badge>
+                                    </td>
+                                    <td class="center">
+                                        <a @click.prevent="$router.push('/admin/crawlers/'+crawler.id+'/'+crawl.id)" :href="'/admin/crawlers/'+crawler.id+'/'+crawl.id" class="row-button">
+                                            <i class="fa fa-info" aria-hidden="true"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </template>
+                            <tr v-else>
+                                <td colspan="6">This crawler has not performed any crawls yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template v-else>
+        <div class="panel panel--flush">
+            <div class="loader">
+                <i class="fa fa-cog fa-spin"></i><br />
+                Fetching crawler...
+            </div>
+        </div>
+    </template>
+
+    <token-generator :crawler="id"></token-generator>
+</div>

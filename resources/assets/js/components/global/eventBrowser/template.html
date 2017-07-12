@@ -1,0 +1,60 @@
+<div>
+    <section class="data-summary">
+        <p v-if="! initiated">Please wait...</p>
+        <p v-else>{{ total }} transactions found</p>
+
+        <nav class="data-summary__actions" v-if="initiated">
+            <div class="data-summary__action-group">
+                <a v-on:click.prevent="prevPage()" v-if="1 < page"><i class="fa fa-chevron-left"></i> Previous</a>
+                <span>Page {{ page }}</span>
+                <a v-on:click.prevent="nextPage()" v-if="hasMorePages">Next <i class="fa fa-chevron-right"></i></a>
+            </div>
+        </nav>
+    </section>
+
+    <table class="table table--with-base-summary">
+        <thead>
+            <tr>
+                <th v-if="! user">User</th>
+                <th>Account</th>
+                <th>Action</th>
+                <th>Observed at</th>
+                <th style="width: 100px;">Undo</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-if="loading">
+                <td v-bind:colspan="user ? 4 : 5" class="table__loading">
+                    <i class="fa fa-cog fa-spin"></i><br />
+                    Fetching transactions...
+                </td>
+            </tr>
+            <template v-else>
+                <template v-if="transactions.length">
+                    <event-row v-for="transaction in transactions" :transaction="transaction" :show-user="! user"></event-row>
+                </template>
+                <template v-else>
+                    <tr>
+                        <td v-bind:colspan="user ? 4 : 5" class="table__empty">
+                            <i class="fa fa-bookmark-o"></i><br />
+                            Looks like there's nothing here.
+                        </td>
+                    </tr>
+                </template>
+            </template>
+        </tbody>
+    </table>
+
+    <section class="data-summary">
+        <p v-if="! initiated">Please wait...</p>
+        <p v-else>{{ total }} transactions found</p>
+
+        <nav class="data-summary__actions" v-if="initiated">
+            <div class="data-summary__action-group">
+                <a v-on:click.prevent="prevPage()" v-if="1 < page"><i class="fa fa-chevron-left"></i> Previous</a>
+                <span>Page {{ page }}</span>
+                <a v-on:click.prevent="nextPage()" v-if="hasMorePages">Next <i class="fa fa-chevron-right"></i></a>
+            </div>
+        </nav>
+    </section>
+</div>

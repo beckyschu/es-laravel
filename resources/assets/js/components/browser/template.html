@@ -1,0 +1,9 @@
+<div>
+    <discoveries-subheader title="Discoveries" :scope="scope"></discoveries-subheader>
+
+    <div class="page">
+        <div class="container">
+            <router-view :auth="auth" :scope="scope"></router-view>
+        </div>
+    </div>
+</div>

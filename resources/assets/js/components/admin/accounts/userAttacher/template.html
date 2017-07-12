@@ -1,0 +1,40 @@
+<div>
+    <div class="remodal" data-remodal-id="user_attacher">
+        <button data-remodal-action="cancel" class="remodal-close"></button>
+
+        <h1 class="subtitle"><i class="fa fa-paperclip"></i> Attach user</h1>
+
+        <template v-if="! users.length">
+            <div class="loader">
+                <i class="fa fa-cog fa-spin"></i><br />
+                Setting up...
+            </div>
+        </template>
+
+        <template v-else>
+            <div class="alert alert--error" v-if="errors.length">
+                <ul>
+                    <li v-for="error in errors">{{ error }}</li>
+                </ul>
+            </div>
+
+            <form class="form" v-on:submit.prevent="attach()" v-if="renderForm">
+                <label for="user">User</label>
+                <div class="form__select">
+                    <select name="user" v-model="user">
+                        <option value="">Select a user...</option>
+                        <option v-for="user in users" v-bind:value="user.id">{{ user.first_name+' '+user.last_name }}</option>
+                    </select>
+                </div>
+                <button type="submit" class="form__button form__button--spaced">
+                    <template v-if="isAttaching">
+                        <i class="fa fa-cog fa-spin"></i> Attaching user
+                    </template>
+                    <template v-else>
+                        Attach user
+                    </template>
+                </button>
+            </form>
+        </template>
+    </div>
+</div>

@@ -1,0 +1,53 @@
+<div>
+    <template v-if="seller">
+        <div class="grid">
+            <div class="grid__col l-one-half">
+                <div class="panel">
+                    <h2 class="subtitle">
+                        <i class="fa fa-user-secret"></i> Details
+                    </h2>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th style="width: 120px;">ID</th>
+                                <td>{{ seller.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Name</th>
+                                <td>{{ seller.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td><status-badge :states="sellerStatuses" :colors="sellerStatusColors" :code="seller.status" type="sellers" :id="seller.id"></status-badge></td>
+                            </tr>
+                            <tr>
+                                <th>Flag</th>
+                                <td><status-badge :states="sellerFlags" :colors="sellerFlagColors" :code="seller.flag" :inline="true" type="sellers" :id="seller.id" field="flag"></status-badge></td>
+                            </tr>
+                            <tr>
+                                <th>Last seen at</th>
+                                <td>{{ formatDate(seller.last_seen_at) }} ({{ fromNow(seller.last_seen_at) }})</td>
+                            </tr>
+                            <tr>
+                                <th>Created at</th>
+                                <td>{{ formatDate(seller.created_at) }} ({{ fromNow(seller.created_at) }})</td>
+                            </tr>
+                            <tr>
+                                <th>Updated at</th>
+                                <td>{{ formatDate(seller.updated_at) }} ({{ fromNow(seller.updated_at) }})</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template v-else>
+        <div class="panel panel--flush">
+            <div class="loader">
+                <i class="fa fa-cog fa-spin"></i><br />
+                Fetching seller...
+            </div>
+        </div>
+    </template>
+</div>

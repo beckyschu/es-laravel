@@ -1,0 +1,209 @@
+<div>
+    <template v-if="account">
+        <div class="grid">
+            <div class="grid__col l-one-half">
+                <div class="panel">
+                    <h2 class="subtitle"><i class="fa fa-search"></i> Details</h2>
+                    <div class="alert alert--error" v-if="detailErrors.length">
+                        <ul>
+                            <li v-for="error in detailErrors">{{ error }}</li>
+                        </ul>
+                    </div>
+                    <form class="form" v-on:submit.prevent="updateDetails()">
+                        <label for="name">Account name</label>
+                        <input type="text" name="name" v-model="account.name" class="form__input" />
+                        <label for="status">Status</label>
+                        <div class="form__select">
+                            <select name="status" v-model="account.status">
+                                <option v-for="(statusLabel, statusId) in statuses" v-bind:value="statusId">{{ statusLabel }}</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="form__button form__button--spaced">
+                            <template v-if="isSavingDetails">
+                                <i class="fa fa-cog fa-spin"></i> Updating details
+                            </template>
+                            <template v-else>
+                                Update details
+                            </template>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="panel panel--push">
+                    <h2 class="subtitle"><i class="fa fa-map"></i> Address</h2>
+                    <div class="alert alert--error" v-if="addressErrors.length">
+                        <ul>
+                            <li v-for="error in addressErrors">{{ error }}</li>
+                        </ul>
+                    </div>
+                    <form class="form" v-on:submit.prevent="updateAddress()">
+                        <label for="address_line1">Street address</label>
+                        <input type="text" name="address_line1" v-model="account.address_line1" class="form__input" />
+                        <label for="address_line2">Suburb</label>
+                        <input type="text" name="address_line1" v-model="account.address_line2" class="form__input" />
+                        <label for="address_city">City</label>
+                        <input type="text" name="address_city" v-model="account.address_city" class="form__input" />
+                        <label for="address_state">State</label>
+                        <input type="text" name="address_state" v-model="account.address_state" class="form__input" />
+                        <label for="address_zip">Zip Code</label>
+                        <input type="text" name="address_zip" v-model="account.address_zip" class="form__input" />
+                        <label for="address_country">Country</label>
+                        <input type="text" name="address_country" v-model="account.address_country" class="form__input" />
+                        <button type="submit" class="form__button form__button--spaced">
+                            <template v-if="isSavingAddress">
+                                <i class="fa fa-cog fa-spin"></i> Updating address
+                            </template>
+                            <template v-else>
+                                Update address
+                            </template>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="panel panel--push" v-if="$root.auth.can('accounts.delete')">
+                    <input type="password" name="delete_password" ref="deletePasswordField" v-model="deletePassword" v-if="showDeletePassword" :disabled="isDeleting" placeholder="Enter your password to confirm..." class="form__input" style="display: inline-block; margin: 0 5px 0 0;" />
+                    <a href="#" class="button button--danger" v-on:click.prevent="deleteAccount()">
+                        <template v-if="isDeleting">
+                            <i class="fa fa-cog fa-spin" aria-hidden="true"></i>
+                            Deleting...
+                        </template>
+                        <template v-else>
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                            Delete<template v-if="! showDeletePassword"> this account</template>
+                        </template>
+                    </a>
+                    <a href="#" class="button button--secondary" v-on:click.prevent="cancelDeleteAccount()" v-if="showDeletePassword && ! isDeleting">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                        Cancel
+                    </a>
+                    <label v-if="showDeletePassword && ! isDeleting" style="display: block; padding-top: 10px; color: #a94442;">
+                        <input type="checkbox" name="delete_permanent" :value="true" v-model="deletePermanent" />
+                        Permanently delete (this cannot be reversed and will delete all attached discoveries and assets)
+                    </label>
+                </div>
+            </div>
+            <div class="grid__col l-one-half">
+                <div class="panel panel--flush">
+                    <h2 class="subtitle subtitle--collapsible" v-on:click="toggle('assets')">
+                        <i class="fa fa-tags"></i>
+                        Assets ({{ account.assets.length }})
+                        <i class="fa fa-minus-square-o" v-if="sectionIsVisible('assets')"></i>
+                        <i class="fa fa-plus-square-o" v-else></i>
+                    </h2>
+                    <template v-if="sectionIsVisible('assets')">
+                        <section class="data-summary">
+                            <p>{{ account.assets.length }} assets found</p>
+
+                            <nav class="data-summary__actions">
+                                <a href="#" v-on:click.prevent="openAssetCreator()"><i class="fa fa-plus"></i> Create</a>
+                            </nav>
+                        </section>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th style="width: 100px;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-if="account.assets.length">
+                                    <tr v-for="asset in account.assets">
+                                        <td>
+                                            <router-link :to="{ path: '/admin/assets/'+asset.id }">
+                                                {{ asset.name }}
+                                            </router-link>
+                                        </td>
+                                        <td>
+                                            <status-badge :states="basicStatuses" :colors="basicStatusColors" :code="asset.status"></status-badge>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <tr v-else>
+                                    <td colspan="2">There are no assets attached to this account.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </template>
+                </div>
+
+                <div class="panel panel--flush panel--push">
+                    <h2 class="subtitle subtitle--collapsible" v-on:click="toggle('users')">
+                        <i class="fa fa-users"></i>
+                        Users ({{ account.users.length }})
+                        <i class="fa fa-minus-square-o" v-if="sectionIsVisible('users')"></i>
+                        <i class="fa fa-plus-square-o" v-else></i>
+                    </h2>
+                    <template v-if="sectionIsVisible('users')">
+                        <section class="data-summary">
+                            <p>{{ account.users.length }} users found</p>
+
+                            <nav class="data-summary__actions">
+                                <a href="#" v-on:click.prevent="openUserAttacher()"><i class="fa fa-paperclip"></i> Attach</a>
+                            </nav>
+                        </section>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th style="width: 60px;">Status</th>
+                                    <th style="width: 100px;">Primary</th>
+                                    <th style="width: 100px;">Detach</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-if="account.users.length">
+                                    <tr v-for="user in account.users">
+                                        <td>
+                                            <router-link to="{ path: '/admin/assets/'+asset.id }">
+                                                {{ user.first_name+' '+user.last_name }}
+                                            </router-link>
+                                        </td>
+                                        <td>
+                                            <status-badge :states="basicStatuses" :colors="basicStatusColors" :code="user.status"></status-badge>
+                                        </td>
+                                        <td>
+                                            <template v-if="user.id == isSettingPrimaryUser">
+                                                <i class="fa fa-cog fa-spin"></i> Setting...
+                                            </template>
+                                            <template v-else>
+                                                <template v-if="user.id == account.primary_user">
+                                                    <i class="fa fa-check"></i> Primary
+                                                </template>
+                                                <template v-else>
+                                                    <a href="#" v-on:click.prevent="setPrimaryUser(user.id)">Set primary</a>
+                                                </template>
+                                            </template>
+                                        </td>
+                                        <td>
+                                            <template v-if="user.id == isDetachingUser">
+                                                <i class="fa fa-cog fa-spin"></i> Detaching...
+                                            </template>
+                                            <template v-else>
+                                                <a href="#" v-on:click.prevent="detachUser(user.id)">Detach</a>
+                                            </template>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <tr v-else>
+                                    <td colspan="4">There are no users attached to this account.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template v-else>
+        <div class="panel panel--flush">
+            <div class="loader">
+                <i class="fa fa-cog fa-spin"></i><br />
+                Fetching account...
+            </div>
+        </div>
+    </template>
+
+    <asset-creator :account="id"></asset-creator>
+
+    <user-attacher :account="id"></user-attacher>
+</div>

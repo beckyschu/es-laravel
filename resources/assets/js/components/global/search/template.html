@@ -1,0 +1,6 @@
+<div class="subheader__search">
+    <form v-on:submit.prevent="search()">
+        <input type="text" placeholder="Search" v-model="query" />
+    </form>
+    <a href="#" v-on:click.prevent="search()"><i class="fa fa-search" aria-hidden="true"></i></a>
+</div>

@@ -1,0 +1,9 @@
+<div class="quick-status-updator" v-if="count">
+    <div class="quick-status-updator__count">
+        Selected <span>({{ count }})</span>
+    </div>
+    <select name="status" v-model="status">
+        <option value="" disabled>Set status as</option>
+        <option v-for="(statusLabel, statusId) in statuses" v-bind:value="statusId">{{ statusLabel }}</option>
+    </select>
+</div>

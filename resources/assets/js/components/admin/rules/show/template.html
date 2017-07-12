@@ -1,0 +1,66 @@
+<div>
+    <template v-if="rule">
+        <div class="grid">
+            <div class="grid__col l-one-third">
+                <div class="panel">
+                    <h2 class="subtitle">
+                        <i class="fa fa-search"></i>
+                        Details
+                    </h2>
+                    <div class="alert alert--error" v-if="errors.length">
+                        <ul>
+                            <li v-for="error in errors">{{ error }}</li>
+                        </ul>
+                    </div>
+                    <div class="alert alert--warning" v-if="rule.is_locked">
+                        <p><i class="fa fa-lock"></i> This rule is locked from editing</p>
+                    </div>
+                    <form class="form" v-on:submit.prevent="update()">
+                        <label for="status">Target status</label>
+                        <multiselect id="status" v-model="rule.status" :options="statusOptions" label="label" track-by="id" :searchable="true" placeholder="Select a status" :disabled="rule.is_locked"></multiselect>
+                        <label for="priority">Priority</label>
+                        <input type="text" name="priority" v-model="rule.priority" class="form__input form__input--full" :disabled="rule.is_locked" />
+                        <label for="comment">Comment</label>
+                        <textarea name="comment" v-model="rule.comment" class="form__input form__input--full" :disabled="rule.is_locked"></textarea>
+                        <label for="status">Status</label>
+                        <multiselect id="is_active" v-model="rule.is_active" :options="isActiveOptions" label="label" track-by="id" :disabled="rule.is_locked"></multiselect>
+                        <button type="submit" class="form__button form__button--spaced" v-if="! rule.is_locked">
+                            <template v-if="isUpdating">
+                                <i class="fa fa-cog fa-spin"></i> Updating
+                            </template>
+                            <template v-else>
+                                Update
+                            </template>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="grid__col l-two-thirds">
+                <div class="panel" v-if="! rule.is_locked">
+                    <h2 class="subtitle">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                        Rule editor
+                    </h2>
+                    <rule-editor :rule="rule"></rule-editor>
+                </div>
+                <div class="panel panel--push">
+                    <h2 class="subtitle">
+                        <i class="fa fa-terminal" aria-hidden="true"></i>
+                        Rule code
+                    </h2>
+                    <div class="console-output console-output--expand">
+                        <pre>{{ JSON.stringify(rule.rule, undefined, 4) }}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template v-else>
+        <div class="panel panel--flush">
+            <div class="loader">
+                <i class="fa fa-cog fa-spin"></i><br />
+                Fetching rule...
+            </div>
+        </div>
+    </template>
+</div>

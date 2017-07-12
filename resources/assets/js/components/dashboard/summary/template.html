@@ -1,0 +1,24 @@
+<div>
+    <template v-if="discoveriesAreLoading">
+        <div class="loader">
+            <i class="fa fa-cog fa-spin"></i><br />
+            Loading discoveries...
+        </div>
+    </template>
+    <template v-else>
+        <div class="grid">
+            <div class="grid__col l-two-thirds">
+                <div class="grid">
+                    <div class="grid__col l-one-quarter" v-for="(count, status) in discoveries">
+                        <div class="radial-report" :id="'discoveries_' + status">
+                            <router-link :to="{ path: getFilteredPath('discoveries', status) }">
+                                <div class="radial-report__value">{{ formatNumber(count) }}</div>
+                                <div class="radial-report__label">{{ discoveryStatusLabel(status) }}</div>
+                            </router-link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</div>

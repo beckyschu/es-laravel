@@ -1,0 +1,52 @@
+<article class="chart-widget">
+    <h1 class="chart-widget__title">
+        <div class="chart-widget__controls">
+            <select v-model="platform">
+                <option v-bind:value="null">All platforms</option>
+                <option v-for="(label, index) in platforms" v-bind:value="index">
+                    {{ label }}
+                </option>
+            </select>
+        </div>
+        Top Sellers
+    </h1>
+    <div class="chart-widget__content chart-widget__content--table">
+
+        <div class="loader" v-if="isLoading">
+            <i class="fa fa-cog fa-spin"></i><br />
+            Generating chart...
+        </div>
+
+        <template v-else>
+            <table class="table chart-widget__table" v-if="chartData && chartData.length">
+                <thead>
+                    <tr>
+                        <th class="center">#</th>
+                        <th>Name</th>
+                        <th>Listings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(seller, key) in chartData">
+                        <td class="center">{{ key + 1 }}</td>
+                        <td>
+                            <router-link to="{ path: '/browser/sellers/'+seller.seller_id }">
+                                {{ seller.seller_username }}
+                            </router-link>
+                        </td>
+                        <td>
+                            <router-link to="{ path: '/browser/discoveries?seller='+seller.seller_id }">
+                                {{ seller.discovery_count }}
+                            </router-link>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="loader" v-else>
+                <i class="fa fa-times"></i><br />
+                No sellers found for this platform
+            </div>
+        </template>
+
+    </div>
+</article>

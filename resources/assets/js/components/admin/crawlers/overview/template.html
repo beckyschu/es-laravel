@@ -1,0 +1,56 @@
+<div class="panel panel--listing">
+    <section class="data-summary">
+        <p v-if="isLoading">Please wait...</p>
+        <p v-else>{{ crawlers.length }} crawlers found</p>
+    </section>
+
+    <table class="table table--with-base-summary">
+        <thead>
+            <tr>
+                <th class="table__sort-header table__sort-header--static table__sort-header--ASC">Platform</th>
+                <th style="width: 105px;">Status</th>
+                <th style="width: 150px;">Last Healthy Crawl</th>
+                <th style="width: 150px;">Avg Memory Usage</th>
+                <th style="width: 150px;">Avg Duration</th>
+                <th style="width: 60px;" class="center">Info</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-if="isLoading">
+                <td colspan="6" class="table__loading">
+                    <i class="fa fa-cog fa-spin"></i><br />
+                    Fetching crawlers...
+                </td>
+            </tr>
+            <template v-else>
+                <template v-if="crawlers.length">
+                    <tr v-for="crawler in crawlers">
+                        <td><platform-ident :platform="crawler.platform"></platform-ident></td>
+                        <td><status-badge :states="statuses" :colors="statusColors" :code="crawler.status"></status-badge></td>
+                        <td>{{ crawler.last_healthy_crawl ? fromNow(crawler.last_healthy_crawl) : 'Never' }}</td>
+                        <td>{{ crawler.avg_memory_usage ? crawler.avg_memory_usage_human : 'Unknown' }}</td>
+                        <td>{{ crawler.avg_duration ? crawler.avg_duration_human : 'Unknown' }}</td>
+                        <td class="center">
+                            <a @click.prevent="$router.push('/admin/crawlers/'+crawler.id)" :href="'/admin/crawlers/'+crawler.id" class="row-button">
+                                <i class="fa fa-info" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </template>
+                <template v-else>
+                    <tr>
+                        <td colspan="6" class="table__empty">
+                            <i class="fa fa-bookmark-o"></i><br />
+                            Looks like there's nothing here.
+                        </td>
+                    </tr>
+                </template>
+            </template>
+        </tbody>
+    </table>
+
+    <section class="data-summary">
+        <p v-if="isLoading">Please wait...</p>
+        <p v-else>{{ crawlers.length }} crawlers found</p>
+    </section>
+</div>

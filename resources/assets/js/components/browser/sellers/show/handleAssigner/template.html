@@ -1,0 +1,51 @@
+<div>
+    <div class="steplist">
+        <article>
+            <span class="steplist__n">1</span>
+            <form class="form" v-on:submit.prevent="search()">
+                <label for="query">Search for a handle</label>
+                <div class="grid">
+                    <div class="grid__col grid__col--bottom l-four-fifths">
+                        <input name="query" id="query" class="form__input form__input--full" placeholder="Enter a search term" v-model="query" />
+                    </div>
+                    <div class="grid__col grid__col--bottom l-one-fifth">
+                        <a href="#" v-on:click.prevent="search()" class="button button--full">
+                            <span v-if="! isSearching">Search</span>
+                            <i class="fa fa-circle-o-notch fa-spin" v-else></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </article>
+        <article v-if="handles.length">
+            <span class="steplist__n">2</span>
+            <label class="label" for="results">Select handle to merge with this seller</label>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Platform</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="handle in handles">
+                        <td style="width: 60px;">{{ shortId(handle.id) }}</td>
+                        <td style="max-width: 150px;" class="table__truncate">{{ handle.username }}</td>
+                        <td><platform-ident :platform="handle.platform"></platform-ident></td>
+                        <td>
+                            <a href="#" class="button button--mini" v-on:click.prevent="reassign(handle.id)">
+                                <template v-if="isReassigning && handle.id == selected_handle">
+                                    <i class="fa fa-cog fa-spin"></i>
+                                    Reassigning
+                                </template>
+                                <template v-else>Reassign</template>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </article>
+    </div>
+</div>

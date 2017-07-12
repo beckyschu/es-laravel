@@ -1,0 +1,26 @@
+<div>
+    <div class="remodal" data-remodal-id="keyword_creator">
+        <button data-remodal-action="cancel" class="remodal-close"></button>
+
+        <h1 class="subtitle"><i class="fa fa-plus"></i> Create keyword</h1>
+
+        <div class="alert alert--error" v-if="errors.length">
+            <ul>
+                <li v-for="error in errors">{{ error }}</li>
+            </ul>
+        </div>
+
+        <form class="form" v-on:submit.prevent="create()">
+            <label for="keyword">Keyword</label>
+            <input type="text" name="keyword" v-model="keyword.keyword" class="form__input" />
+            <button type="submit" class="form__button form__button--spaced">
+                <template v-if="isCreating">
+                    <i class="fa fa-cog fa-spin"></i> Creating keyword
+                </template>
+                <template v-else>
+                    Create keyword
+                </template>
+            </button>
+        </form>
+    </div>
+</div>

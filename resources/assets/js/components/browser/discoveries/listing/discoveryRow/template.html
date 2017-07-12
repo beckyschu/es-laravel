@@ -1,0 +1,51 @@
+<tr v-bind:class="{'is-selected': selected}">
+    <td class="table__free center">{{ rowKey }}</td>
+    <td class="table__free center" v-if="auth.can('discoveries.update')">
+        <a href="#" v-on:click.prevent="toggle()">
+            <i class="fa fa-square-o" v-if="! selected"></i>
+            <i class="fa fa-check-square-o" v-cloak v-else></i>
+        </a>
+    </td>
+    <td>
+        <template v-if="statusWriteable() && auth.can('discoveries.update')">
+            <status-badge :states="writeableStatuses" :colors="statusColors" :code="discovery.status" :inline="true" type="discoveries" :id="discovery.id"></status-badge>
+        </template>
+        <template v-else>
+            <status-badge :states="statuses" :colors="statusColors" :code="discovery.status"></status-badge>
+        </template>
+    </td>
+    <td class="center"><span :title="discovery.last_seen_at">{{ lastSeen }}</span></td>
+    <td class="center">
+        <a :href="discovery.url" target="_blank">
+            <span v-if="title" v-html="title"></span>
+            <template v-else>No title</template>
+        </a>
+        <div class="inline-image" v-if="!showImages && discovery.picture">
+            <i class="fa fa-picture-o"></i>
+            <img v-bind:src="discovery.picture" />
+        </div>
+    </td>
+    <td class="center"><platform-ident :platform="discovery.platform"></platform-ident></td>
+    <td class="center">{{ discovery.keyword ? discovery.keyword : 'Unknown' }}</td>
+    <td class="center" v-if="discovery.seller"><a href="#" v-on:click.prevent="filterSeller()" v-html="seller"></a></td>
+    <td v-else class="muted">None</td>
+    <td class="center" v-if="discovery.origin" v-html="location"></td>
+    <td class="center" v-else><span class="muted">n/a</span></td>
+    <td class="center" v-if="discovery.price">{{ discovery.price }}</td>
+    <td class="center" v-else><span class="muted">n/a</span></td>
+    <td class="center" v-if="discovery.qty_available">{{ discovery.qty_available }}</td>
+    <td class="center" v-else><span class="muted">n/a</span></td>
+    <td class="center" v-if="discovery.qty_sold">{{ discovery.qty_sold }}</td>
+    <td class="center" v-else><span class="muted">n/a</span></td>
+    <td v-if="discovery.account">{{ discovery.account.name }}</td>
+    <template v-if="showImages">
+        <td>
+            <img v-bind:src="discovery.picture" v-if="discovery.picture" style="max-width: 200px; height: auto;" />
+        </td>
+    </template>
+    <td class="center">
+        <a @click.prevent="$router.push('/browser/discoveries/'+discovery.id)" :href="'/browser/discoveries/'+discovery.id" class="row-button">
+            <i class="fa fa-info" aria-hidden="true"></i>
+        </a>
+    </td>
+</tr>

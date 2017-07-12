@@ -1,0 +1,52 @@
+{
+  "name": "ipshark-platform",
+  "version": "1.0.0",
+  "description": "Frontend and API for IP Shark platform",
+  "repository": "git@github.com:opmonk/dan-laravel.git",
+  "author": "Dan Greaves <dan@dangreaves.com>",
+  "licence": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "chokidar": "^1.6.1",
+    "commander": "^2.9.0",
+    "dotenv": "^4.0.0",
+    "ioredis": "^2.4.3",
+    "json-logic-js": "^1.0.9",
+    "socket.io": "^1.7.2",
+    "socket.io-client": "^1.7.2",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-react": "^6.16.0",
+    "chart.js": "^2.4.0",
+    "gulp": "^3.9.1",
+    "gulp-convert-newline": "^0.0.3",
+    "highcharts": "^5.0.7",
+    "jwt-decode": "^2.1.0",
+    "laravel-elixir": "^6.0.0-15",
+    "laravel-elixir-browserify-official": "^0.1.3",
+    "moment": "^2.17.1",
+    "numeral": "^2.0.4",
+    "progressbar.js": "^1.0.1",
+    "tinycolor2": "^1.4.1",
+    "url": "^0.11.0",
+    "vue": "^2.1.6",
+    "vue-multiselect": "next",
+    "vue-resource": "^1.0.3",
+    "vue-router": "^2.1.1",
+    "vue2-dropzone": "^2.2.4",
+    "vueify": "^9.4.0"
+  },
+  "browser": {
+    "vue": "vue/dist/vue.common"
+  },
+  "scripts": {
+    "docker": "cd laradock && docker-compose up -d nginx mysql redis php-fpm workspace beanstalkd php-worker",
+    "docker:install": "npm run docker:setup && npm run docker && cd laradock && sh install.sh",
+    "docker:ssh": "cd laradock && docker-compose exec workspace bash",
+    "docker:stop": "cd laradock && docker-compose down",
+    "docker:setup": "cp -R ./laradock_config/* ./laradock",
+    "docker:rebuild": "cd laradock && docker-compose build --no-cache nginx mysql redis php-fpm workspace beanstalkd php-worker"
+  }
+}

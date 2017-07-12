@@ -1,0 +1,56 @@
+<div>
+    <div class="remodal" data-remodal-id="submit-form">
+        <button data-remodal-action="cancel" class="remodal-close"></button>
+
+        <h1 class="subtitle"><i class="fa fa-plus" aria-hidden="true"></i> Submit Discovery</h1>
+
+        <form v-on:submit.prevent="submit()" class="form">
+            <label for="first_name">Name *</label>
+            <p class="form__info">Name of who is submitting this infringement:</p>
+            <div class="form__select">
+                <div class="grid">
+                    <div class="grid__col l-one-half">
+                        <input name="first_name" v-model="payload.first_name" placeholder="First name" class="form__input form__input--full" />
+                    </div>
+                    <div class="grid__col l-one-half">
+                        <input name="last_name" v-model="payload.last_name" placeholder="Last name" class="form__input form__input--full" />
+                    </div>
+                </div>
+            </div>
+
+            <label for="email">Email *</label>
+            <p class="form__info">Email of who is submitting this infringement:</p>
+            <div class="form__select">
+                <input name="email" v-model="payload.email" placeholder="Email" class="form__input form__input--full" />
+            </div>
+
+            <label for="urls">Infringing Website URL *</label>
+            <p class="form__info">Please copy and paste each infringement URL followed by a comma or return:</p>
+            <div class="form__select">
+                <textarea name="urls" v-model="payload.urls" class="form__input form__input--full form__textarea"></textarea>
+            </div>
+
+            <label for="type">Type of Infringement *</label>
+            <div class="form__select">
+                <multiselect id="type" v-model="payload.type" :options="typeOptions" label="label" track-by="id"></multiselect>
+            </div>
+
+            <label for="information">Additional Information</label>
+            <p class="form__info">Anything else we should know? (Optional)</p>
+            <div class="form__select">
+                <textarea name="information" v-model="payload.information" class="form__input form__input--full form__textarea"></textarea>
+            </div>
+
+            <button type="submit" class="form__button form__button--spaced">
+                <template v-if="isSending">
+                    <i class="fa fa-cog fa-spin"></i> Submitting
+                </template>
+                <template v-else>
+                    Submit
+                </template>
+            </button>
+
+            <a href="#" data-remodal-action="cancel" class="form__secondary">Cancel</a>
+        </form>
+    </div>
+</div>

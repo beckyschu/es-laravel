@@ -1,0 +1,161 @@
+<div>
+    <template v-if="asset">
+        <div class="grid">
+            <div class="grid__col l-one-half">
+                <div class="panel">
+                    <h2 class="subtitle">
+                        <nav class="subtitle__actions">
+                            <a v-on:click.prevent="viewDiscoveries()" class="button button--secondary button--mini">
+                                <i class="fa fa-flag-o" aria-hidden="true"></i>
+                                View discoveries
+                            </a>
+                        </nav>
+                        <i class="fa fa-search"></i>
+                        Details
+                    </h2>
+                    <div class="alert alert--error" v-if="errors.length">
+                        <ul>
+                            <li v-for="error in errors">{{ error }}</li>
+                        </ul>
+                    </div>
+                    <form class="form" v-on:submit.prevent="updateDetails()">
+                        <label for="name">Asset name</label>
+                        <input type="text" name="name" v-model="asset.name" class="form__input" />
+                        <label for="description">Description</label>
+                        <input type="text" name="name" v-model="asset.description" class="form__input" />
+                        <p>
+                            <a href="#" @click.prevent="asset.description = 'Trademark'">Trademark</a> |
+                            <a href="#" @click.prevent="asset.description = 'Search Term'">Search Term</a>
+                        </p>
+                        <label for="counter_keywords">Counter Keywords</label>
+                        <multiselect v-model="asset.counter_keywords" :options="asset.counter_keywords" :multiple="true" :taggable="true" @tag="addCounterKeywordTag" placeholder="Add a keyword"></multiselect>
+                        <label for="ebay_category">eBay Category</label>
+                        <multiselect id="ebay_category" v-model="asset.ebay_category" :options="ebayCategories" label="label" track-by="id" :searchable="true" placeholder="Select a category"></multiselect>
+                        <label for="status">Status</label>
+                        <div class="form__select">
+                            <select name="status" v-model="asset.status">
+                                <option v-for="(statusLabel, statusId) in statuses" v-bind:value="statusId">{{ statusLabel }}</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="form__button form__button--spaced">
+                            <template v-if="isSavingDetails">
+                                <i class="fa fa-cog fa-spin"></i> Updating details
+                            </template>
+                            <template v-else>
+                                Update details
+                            </template>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="panel panel--push">
+                    <h2 class="subtitle">
+                        <nav class="subtitle__actions">
+                            <a href="#" v-on:click.prevent="openKeywordCreator()" class="button button--secondary button--mini"><i class="fa fa-plus"></i> Add keyword</a>
+                        </nav>
+                        <i class="fa fa-key" aria-hidden="true"></i> Keywords
+                    </h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Keyword</th>
+                                <th>Auto Schedule</th>
+                                <th style="width: 60px;" class="center">Info</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template v-if="asset.keywords.length">
+                                <tr v-for="keyword in asset.keywords">
+                                    <td>{{ keyword.keyword }}</td>
+                                    <td>{{ formatSchedule(keyword.schedule) }}</td>
+                                    <td class="center">
+                                        <a @click.prevent="$router.push('/admin/assets/'+asset.id+'/keywords/'+keyword.id)" :href="'/admin/assets/'+asset.id+'/keywords/'+keyword.id" class="row-button">
+                                            <i class="fa fa-info" aria-hidden="true"></i>
+                                        </a>
+                                        <a @click.prevent="deleteKeyword(keyword)" href="#" class="row-button"><i class="fa fa-times"></i></a>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template v-else>
+                                <tr>
+                                    <td colspan="3">No keywords have been attached to this asset.</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="panel panel--push" v-if="$root.auth.can('assets.delete')">
+                    <input type="password" name="delete_password" ref="deletePasswordField" v-model="deletePassword" v-if="showDeletePassword" :disabled="isDeleting" placeholder="Enter your password to confirm..." class="form__input" style="display: inline-block; margin: 0 5px 0 0;" />
+                    <a href="#" class="button button--danger" v-on:click.prevent="deleteAsset()">
+                        <template v-if="isDeleting">
+                            <i class="fa fa-cog fa-spin" aria-hidden="true"></i>
+                            Deleting...
+                        </template>
+                        <template v-else>
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                            Delete<template v-if="! showDeletePassword"> this asset</template>
+                        </template>
+                    </a>
+                    <a href="#" class="button button--secondary" v-on:click.prevent="cancelDeleteAsset()" v-if="showDeletePassword && ! isDeleting">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                        Cancel
+                    </a>
+
+                </div>
+            </div>
+            <div class="grid__col l-one-half">
+                <div class="panel panel--flush">
+                    <h2 class="subtitle">
+                        <i class="fa fa-bug" aria-hidden="true"></i> Latest crawls
+                    </h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Platform</th>
+                                <th>Keyword</th>
+                                <th>Submissions</th>
+                                <th>Accepted</th>
+                                <th>Time Completed</th>
+                                <th style="width: 100px;">Status</th>
+                                <th style="width: 60px;" class="center">Info</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template v-if="asset.crawls.length">
+                                <tr v-for="crawl in asset.crawls">
+                                    <td><platform-ident :platform="crawl.crawler.platform"></platform-ident></td>
+                                    <td>{{ crawl.keyword }}</td>
+                                    <td>{{ crawl.submission_count }}</td>
+                                    <td>{{ crawl.accepted_count }}</td>
+                                    <td>{{ formatDate(crawl.crawl_ended_at) }}</td>
+                                    <td><status-badge :states="crawlStatuses" :colors="crawlStatusColors" :code="crawl.generatedStatus" type="crawls" :id="crawl.id"></status-badge></td>
+                                    <td class="center">
+                                        <a @click.prevent="$router.push('/admin/crawlers/'+crawl.crawler.id+'/'+crawl.id)" :href="'/admin/crawlers/'+crawl.crawler.id+'/'+crawl.id" class="row-button">
+                                            <i class="fa fa-info" aria-hidden="true"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template v-else>
+                                <tr>
+                                    <td colspan="4">No crawls have been performed for this asset yet.</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <keyword-creator :asset="asset"></keyword-creator>
+    </template>
+    <template v-else>
+        <div class="panel panel--flush">
+            <div class="loader">
+                <i class="fa fa-cog fa-spin"></i><br />
+                Fetching asset...
+            </div>
+        </div>
+    </template>
+</div>

@@ -1,0 +1,19 @@
+<div>
+    <div class="remodal" data-remodal-id="token_generator">
+        <button data-remodal-action="cancel" class="remodal-close"></button>
+
+        <template v-if="isLoading">
+            <div class="loader">
+                <i class="fa fa-cog fa-spin"></i><br />
+                Generating token...
+            </div>
+        </template>
+
+        <template v-else>
+            <h1 class="subtitle"><i class="fa fa-key" aria-hidden="true"></i> API token</h1>
+            <div class="alert alert--info">
+                <p class="token">{{ token }}</p>
+            </div>
+        </template>
+    </div>
+</div>

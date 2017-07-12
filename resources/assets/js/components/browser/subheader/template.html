@@ -1,0 +1,19 @@
+<header class="subheader">
+    <div class="container">
+        <h1 class="subheader__title">{{ actualTitle }}</h1>
+        <div class="subheader__right">
+            <quick-status-updator></quick-status-updator>
+            <search></search>
+        </div>
+        <nav class="subheader__nav">
+            <router-link :to="getSwitchPath('discoveries')">
+                <i class="fa fa-bug"></i> Listings</a>
+            </router-link>
+            <router-link :to="getSwitchPath('sellers')">
+                <i class="fa fa-user-secret"></i> Sellers</a>
+            </router-link>
+            <a href="#" v-on:click.prevent="openFilterSelector()">Filters</a>
+            <a href="#" class="subheader__nav-link--danger" v-if="isFiltered()" v-on:click.prevent="clearFilters()">Reset Filters</a>
+        </nav>
+    </div>
+</header>

@@ -1,0 +1,29 @@
+<div>
+    <div class="remodal" data-remodal-id="schedule_editor">
+        <button data-remodal-action="cancel" class="remodal-close"></button>
+
+        <template v-if="schedule">
+            <h1 class="subtitle">
+                <i class="fa fa-clock-o" aria-hidden="true"></i>
+                Schedule for {{ schedule.crawler.platform }}
+            </h1>
+
+            <form class="form" v-on:submit.prevent="update()">
+                <label for="schedule">Automatic Schedule</label>
+                <div class="form__select">
+                    <select name="schedule" v-model="schedule.schedule">
+                        <option v-for="s in schedules" v-bind:value="s.value">{{ s.label }}</option>
+                    </select>
+                </div>
+                <button type="submit" class="form__button form__button--spaced">
+                    <template v-if="isUpdating">
+                        <i class="fa fa-cog fa-spin"></i> Updating schedule
+                    </template>
+                    <template v-else>
+                        Update schedule
+                    </template>
+                </button>
+            </form>
+        </template>
+    </div>
+</div>

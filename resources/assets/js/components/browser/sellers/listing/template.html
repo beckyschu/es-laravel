@@ -1,0 +1,92 @@
+<div>
+    <div class="panel panel--listing">
+        <section class="data-summary">
+            <p v-if="! initiated">Please wait...</p>
+            <p v-else>{{ formattedTotal }} sellers found</p>
+
+            <nav class="data-summary__actions" v-if="initiated">
+
+                <template v-if="selectedRows.length && auth.can('sellers.update')">
+                    <a href="#" v-on:click.prevent="openFlagUpdator()"><i class="fa fa-pencil"></i> Update flags ({{ selectedRows.length }})</a>
+                </template>
+                <template v-else-if="auth.can('sellers.update')">
+                    <a href="#" v-on:click.prevent="openFlagUpdator()"><i class="fa fa-pencil"></i> Update flags</a>
+                </template>
+
+                <div class="data-summary__action-group">
+                    <a v-on:click.prevent="prevPage()" v-if="1 < page"><i class="fa fa-chevron-left"></i> Previous</a>
+                    <span>Page {{ page }}</span>
+                    <a v-on:click.prevent="nextPage()" v-if="hasMorePages">Next <i class="fa fa-chevron-right"></i></a>
+                </div>
+
+            </nav>
+        </section>
+
+        <filter-summary :scope="scope"></filter-summary>
+
+        <table class="table table--with-base-summary table--selectable">
+            <thead>
+                <tr>
+                    <th class="table__free center" style="width: 20px;">
+                        <a href="#" v-on:click.prevent="toggleAll()">
+                            <i class="fa fa-check-square-o" v-if="allSelected()"></i>
+                            <i class="fa fa-square-o" v-else></i>
+                        </a>
+                    </th>
+                    <th is="sort-header" :sort="sort" key="status" label="Status"></th>
+                    <th is="sort-header" :sort="sort" key="flag" label="Flag"></th>
+                    <th is="sort-header" :sort="sort" key="last_seen_at" label="Last Seen"></th>
+                    <th is="sort-header" :sort="sort" key="name" label="Seller ID"></th>
+                    <th>Total Listings</th>
+                    <th>Platform</th>
+                    <th v-if="! auth.hasAccount()">Account</th>
+                    <th style="width: 60px;" class="center">Info</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-if="loading">
+                    <td colspan="8" class="table__loading">
+                        <i class="fa fa-cog fa-spin"></i><br />
+                        Fetching sellers...
+                    </td>
+                </tr>
+                <template v-else>
+                    <template v-if="sellers.length">
+                        <seller-row v-for="seller in sellers" :seller="seller" :scope="scope" :selected="isSelected(seller.id)"></seller-row>
+                    </template>
+                    <template v-else>
+                        <tr>
+                            <td colspan="8" class="table__empty">
+                                <i class="fa fa-bookmark-o"></i><br />
+                                Looks like there's nothing here.
+                            </td>
+                        </tr>
+                    </template>
+                </template>
+            </tbody>
+        </table>
+
+        <section class="data-summary">
+            <p v-if="! initiated">Please wait...</p>
+            <p v-else>{{ formattedTotal }} sellers found</p>
+
+            <nav class="data-summary__actions" v-if="initiated">
+
+                <div class="data-summary__action-group">
+                    <a href="#" v-on:click.prevent="clearFilters()" v-if="isFiltered()" class="button--danger" style="margin-right: -4px;">Reset</a>
+                    <a href="#" v-on:click.prevent="openFilterSelector()"><i class="fa fa-filter"></i> Filters</a>
+                </div>
+
+                <div class="data-summary__action-group">
+                    <a v-on:click.prevent="prevPage()" v-if="1 < page"><i class="fa fa-chevron-left"></i> Previous</a>
+                    <span>Page {{ page }}</span>
+                    <a v-on:click.prevent="nextPage()" v-if="hasMorePages">Next <i class="fa fa-chevron-right"></i></a>
+                </div>
+
+            </nav>
+        </section>
+    </div>
+
+    <filter-selector :scope="scope"></filter-selector>
+    <status-updator :scope="scope" :selected="selectedRows" :total="total" type="sellers"></status-updator>
+</div>

@@ -1,0 +1,62 @@
+<div>
+    <div class="remodal" data-remodal-id="asset_creator">
+        <button data-remodal-action="cancel" class="remodal-close"></button>
+
+        <h1 class="subtitle"><i class="fa fa-plus"></i> Create asset</h1>
+
+        <template v-if="! account && ! accounts.length">
+            <div class="loader">
+                <i class="fa fa-cog fa-spin"></i><br />
+                Setting up...
+            </div>
+        </template>
+
+        <template v-else>
+            <div class="alert alert--error" v-if="errors.length">
+                <ul>
+                    <li v-for="error in errors">{{ error }}</li>
+                </ul>
+            </div>
+
+            <form class="form" v-on:submit.prevent="create()">
+                <label for="name">Asset name</label>
+                <input type="text" name="name" v-model="asset.name" class="form__input" />
+                <label for="description">Description</label>
+                <input type="text" name="description" v-model="asset.description" class="form__input" />
+                <p>
+                    <a href="#" @click.prevent="asset.description = 'Trademark'">Trademark</a> |
+                    <a href="#" @click.prevent="asset.description = 'Search Term'">Search Term</a>
+                </p>
+                <label for="keywords">Keywords</label>
+                <p class="form__info">These keywords will be used to search for listings associated with this asset.</p>
+                <multiselect v-model="asset.keywords" :options="asset.keywords" :multiple="true" :taggable="true" @tag="addKeywordTag" placeholder="Add a keyword"></multiselect>
+                <label for="counter_keywords">Counter Keywords</label>
+                <p class="form__info">These keywords will be used to exclude unrelated listings in searches associated with this asset.</p>
+                <multiselect v-model="asset.counter_keywords" :options="asset.counter_keywords" :multiple="true" :taggable="true" @tag="addCounterKeywordTag" placeholder="Add a keyword"></multiselect>
+                <template v-if="! account">
+                    <label for="account">Account</label>
+                    <div class="form__select">
+                        <select name="account" v-model="asset.account">
+                            <option value=""></option>
+                            <option v-for="account in accounts" v-bind:value="account.id">{{ account.name }}</option>
+                        </select>
+                    </div>
+                </template>
+                <label for="status">Status</label>
+                <div class="form__select">
+                    <select name="status" v-model="asset.status">
+                        <option v-for="(statusLabel, statusId) in assetStatuses" v-bind:value="statusId">{{ statusLabel }}</option>
+                    </select>
+                </div>
+                <button type="submit" class="form__button form__button--spaced">
+                    <template v-if="isCreating">
+                        <i class="fa fa-cog fa-spin"></i> Creating asset
+                    </template>
+                    <template v-else>
+                        Create asset
+                    </template>
+                </button>
+            </form>
+        </template>
+    </div>
+</div>

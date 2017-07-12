@@ -1,0 +1,60 @@
+<div class="panel panel--listing">
+    <section class="data-summary">
+        <p v-if="isLoading">Please wait...</p>
+        <p v-else>{{ accounts.length }} accounts found</p>
+
+        <nav class="data-summary__actions">
+            <a href="#" v-on:click.prevent="openAccountCreator()"><i class="fa fa-plus"></i> Create</a>
+        </nav>
+    </section>
+
+    <table class="table table--with-base-summary">
+        <thead>
+            <tr>
+                <th class="table__sort-header table__sort-header--static table__sort-header--ASC">Account name</th>
+                <th style="width: 200px;">Created at</th>
+                <th style="width: 100px;">Status</th>
+                <th style="width: 40px;" class="center">Info</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-if="isLoading">
+                <td colspan="4" class="table__loading">
+                    <i class="fa fa-cog fa-spin"></i><br />
+                    Fetching accounts...
+                </td>
+            </tr>
+            <template v-else>
+                <template v-if="accounts.length">
+                    <tr v-for="account in accounts">
+                        <td>{{ account.name }}</td>
+                        <td>{{ formatDate(account.created_at) }}</td>
+                        <td>
+                            <status-badge :states="statuses" :colors="statusColors" :code="account.status"></status-badge>
+                        </td>
+                        <td class="center">
+                            <a @click.prevent="$router.push('/admin/accounts/'+account.id)" :href="'/admin/accounts/'+account.id" class="row-button">
+                                <i class="fa fa-info" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </template>
+                <template v-else>
+                    <tr>
+                        <td colspan="4" class="table__empty">
+                            <i class="fa fa-bookmark-o"></i><br />
+                            Looks like there's nothing here.
+                        </td>
+                    </tr>
+                </template>
+            </template>
+        </tbody>
+    </table>
+
+    <section class="data-summary">
+        <p v-if="isLoading">Please wait...</p>
+        <p v-else>{{ accounts.length }} accounts found</p>
+    </section>
+
+    <account-creator :auth="auth"></account-creator>
+</div>

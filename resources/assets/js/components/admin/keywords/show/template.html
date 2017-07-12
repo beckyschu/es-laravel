@@ -1,0 +1,113 @@
+<div>
+    <template v-if="keyword">
+        <div class="grid">
+            <div class="grid__col l-one-half">
+                <div class="panel">
+                    <h2 class="subtitle">
+                        <i class="fa fa-key"></i>
+                        Keyword
+                    </h2>
+                    <div class="alert alert--error" v-if="errors.length">
+                        <ul>
+                            <li v-for="error in errors">{{ error }}</li>
+                        </ul>
+                    </div>
+                    <form class="form" v-on:submit.prevent="update()">
+                        <label for="keyword">Keyword</label>
+                        <input type="text" name="keyword" v-model="keyword.keyword" class="form__input" />
+                        <button type="submit" class="form__button form__button--spaced">
+                            <template v-if="isUpdating">
+                                <i class="fa fa-cog fa-spin"></i> Updating keyword
+                            </template>
+                            <template v-else>
+                                Update keyword
+                            </template>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="grid__col l-one-half">
+                <div class="panel panel--flush">
+                    <h2 class="subtitle">
+                        <img src="/images/parsehub_logo.png" style="width: 16px; height: 16px; display: inline-block; vertical-align: top; margin-right: 3px; line-height: 15px;" />
+                        ParseHub Settings
+                    </h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ParseHub Platform</th>
+                                <th>Start URL</th>
+                                <th>Start Template</th>
+                                <th style="width: 60px;" class="center">Info</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template v-if="keyword.all_settings.data.length">
+                                <tr v-for="setting in keyword.all_settings.data">
+                                    <td><platform-ident :platform="setting.crawler.platform"></platform-ident></td>
+                                    <td v-html="getIssetHtml(setting.start_url)"></td>
+                                    <td v-html="getIssetHtml(setting.start_template)"></td>
+                                    <td class="center">
+                                        <a @click.prevent="openSettingsModal(setting)" href="'#" class="row-button">
+                                            <i class="fa fa-info" aria-hidden="true"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template v-else>
+                                <tr>
+                                    <td colspan="4">No configuration attached to this keyword.</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="panel panel--flush panel--push">
+                    <h2 class="subtitle">
+                        <i class="fa fa-clock-o" aria-hidden="true"></i>
+                        Scheduling
+                    </h2>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Platform</th>
+                            <th>Schedule</th>
+                            <th style="width: 60px;" class="center">Info</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <template v-if="keyword.all_schedules.data.length">
+                            <tr v-for="schedule in keyword.all_schedules.data">
+                                <td><platform-ident :platform="schedule.crawler.platform"></platform-ident></td>
+                                <td v-html="getScheduleLabel(schedule.schedule)"></td>
+                                <td class="center">
+                                    <a @click.prevent="openScheduleModal(schedule)" href="'#" class="row-button">
+                                        <i class="fa fa-info" aria-hidden="true"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </template>
+                        <template v-else>
+                            <tr>
+                                <td colspan="4">No scheduling attached to this keyword.</td>
+                            </tr>
+                        </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <setting-editor :keyword="keyword"></setting-editor>
+        <schedule-editor :keyword="keyword" :schedules="schedules"></schedule-editor>
+    </template>
+    <template v-else>
+        <div class="panel panel--flush">
+            <div class="loader">
+                <i class="fa fa-cog fa-spin"></i><br />
+                Fetching keyword...
+            </div>
+        </div>
+    </template>
+</div>

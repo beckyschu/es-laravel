@@ -1,0 +1,16 @@
+<header class="subheader">
+    <div class="container">
+        <h1 class="subheader__title">{{ title }}</h1>
+        <div class="subheader__right" v-if="shouldShowSearch()">
+            <search></search>
+        </div>
+        <nav class="subheader__nav">
+            <router-link to="/dashboard/summary">
+                <i class="fa fa-th"></i> Summary</a>
+            </router-link>
+            <!-- <router-link to="/dashboard/activity">
+                <i class="fa fa-calendar-check-o"></i> Activity</a>
+            </router-link> -->
+        </nav>
+    </div>
+</header>

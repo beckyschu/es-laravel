@@ -1,0 +1,67 @@
+<table class="table">
+    <tbody>
+        <tr v-if="1 < lines.length">
+            <th>
+                <strong>Multi Comparison:</strong>&nbsp;&nbsp;
+                <select v-model="multiComparison">
+                    <option value="and">AND</option>
+                    <option value="or">OR</option>
+                </select>
+            </th>
+        </tr>
+        <tr v-for="(line, index) in lines">
+            <td>
+                <a href="#" class="icon-link" style="float: right;" v-on:click.prevent="removeLine(index)"><span>Remove</span> <i class="fa fa-times"></i></a>
+                <select v-model="line.operation" disabled>
+                    <option v-for="option in options.operations" v-bind:value="option.id">
+                        {{ option.label }}
+                    </option>
+                </select>
+                <input type="text" v-model="line.discreteValues.one" disabled v-if="'discrete' == line.values.one" />
+                <select v-model="line.values.one" disabled v-else>
+                    <option v-for="option in options.value" v-bind:value="option.id">
+                        {{ option.label }}
+                    </option>
+                </select>
+                <template v-if="showSecondValue(line.operation)">
+                    <input type="text" v-model="line.discreteValues.two" disabled v-if="'discrete' == line.values.two" />
+                    <select v-model="line.values.two" disabled v-else>
+                        <option v-for="option in options.value" v-bind:value="option.id">
+                            {{ option.label }}
+                        </option>
+                    </select>
+                </template>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <a href="#" class="icon-link" style="float: right;" v-on:click.prevent="addNewLine()"><span>Add operation</span> <i class="fa fa-plus"></i></a>
+                <select v-model="newLine.operation">
+                    <option v-for="option in options.operations" v-bind:value="option.id">
+                        {{ option.label }}
+                    </option>
+                </select>
+                <template v-if="'discrete' == newLine.values.one">
+                    <input type="text" v-model="newLine.discreteValues.one" />
+                    <a href="#" v-on:click.prevent="newLine.values.one = null"><i class="fa fa-times"></i></a>
+                </template>
+                <select v-model="newLine.values.one" v-else>
+                    <option v-for="option in options.value" v-bind:value="option.id">
+                        {{ option.label }}
+                    </option>
+                </select>
+                <template v-if="showSecondValue(newLine.operation)">
+                    <template v-if="'discrete' == newLine.values.two">
+                        <input type="text" v-model="newLine.discreteValues.two" />
+                        <a href="#" v-on:click.prevent="newLine.values.two = null"><i class="fa fa-times"></i></a>
+                    </template>
+                    <select v-model="newLine.values.two" v-else>
+                        <option v-for="option in options.value" v-bind:value="option.id">
+                            {{ option.label }}
+                        </option>
+                    </select>
+                </template>
+            </th>
+        </tr>
+    </tbody>
+</table>

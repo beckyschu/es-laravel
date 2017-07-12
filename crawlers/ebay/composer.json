@@ -1,0 +1,13 @@
+{
+    "name": "ipshark/ebay",
+    "description": "eBay crawler for the IP Shark platform.",
+    "version": "v1.0.0",
+    "require": {
+        "dts/ebay-sdk-php": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Shark\\eBay\\": "src/"
+        }
+    }
+}

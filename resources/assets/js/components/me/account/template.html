@@ -1,0 +1,58 @@
+<div>
+    <div class="grid">
+        <div class="grid__col l-one-half">
+            <div class="panel">
+                <h2 class="subtitle">
+                    <i class="fa fa-search"></i> Your details
+                </h2>
+                <div class="alert alert--error" v-if="detailErrors.length">
+                    <ul>
+                        <li v-for="error in detailErrors">{{ error }}</li>
+                    </ul>
+                </div>
+                <form class="form" v-on:submit.prevent="updateDetails()">
+                    <label for="first_name">First name</label>
+                    <input type="text" name="first_name" v-model="user.first_name" class="form__input" />
+                    <label for="last_name">Last name</label>
+                    <input type="text" name="last_name" v-model="user.last_name" class="form__input" />
+                    <label for="email">Email</label>
+                    <input type="text" name="email" v-model="user.email" class="form__input" />
+                    <label for="image">Image</label>
+                    <input type="file" name="image" v-on:change="selectImage" class="form__file" />
+                    <button type="submit" class="form__button form__button--spaced">
+                        <template v-if="isUpdatingDetails">
+                            <i class="fa fa-cog fa-spin"></i> Updating details
+                        </template>
+                        <template v-else>
+                            Update details
+                        </template>
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="grid__col l-one-half">
+            <div class="panel">
+                <h2 class="subtitle">
+                    <i class="fa fa-lock"></i> Update your password
+                </h2>
+                <div class="alert alert--error" v-if="passwordErrors.length">
+                    <ul>
+                        <li v-for="error in passwordErrors">{{ error }}</li>
+                    </ul>
+                </div>
+                <form class="form" v-on:submit.prevent="updatePassword()">
+                    <input type="password" name="password" placeholder="Password" v-model="password" class="form__input" />
+                    <input type="password" name="password_confirm" placeholder="Confirm password" v-model="passwordConfirm" class="form__input" />
+                    <button type="submit" class="form__button form__button--spaced">
+                        <template v-if="isUpdatingPassword">
+                            <i class="fa fa-cog fa-spin"></i> Updating password
+                        </template>
+                        <template v-else>
+                            Update password
+                        </template>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

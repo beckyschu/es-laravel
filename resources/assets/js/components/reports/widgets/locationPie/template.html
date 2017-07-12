@@ -1,0 +1,52 @@
+<article class="chart-widget">
+    <h1 class="chart-widget__title">
+        <div class="chart-widget__controls">
+            <select v-model="status">
+                <option v-bind:value="null">All statuses</option>
+                <option v-for="(label, index) in statuses" v-bind:value="index">
+                    {{ label }}
+                </option>
+            </select>
+        </div>
+        Location
+    </h1>
+    <div class="chart-widget__content">
+
+        <div class="loader" v-if="isLoading">
+            <i class="fa fa-cog fa-spin"></i><br />
+            Generating chart...
+        </div>
+
+        <template v-else>
+            <figure class="chart-widget__chart" v-if="chartData.length">
+                <canvas id="location_chart" width="600" height="280"></canvas>
+            </figure>
+            <div class="loader" v-else>
+                <i class="fa fa-times"></i><br />
+                No locations found for this status
+            </div>
+        </template>
+
+    </div>
+
+
+    <!-- <div class="chart-widget__content">
+
+        <div class="loader" v-if="! canDraw()">
+            <i class="fa fa-pie-chart"></i><br />
+            We don't have enough data to render this graph.
+        </div>
+
+        <div class="grid" v-else>
+            <div class="grid__col l-two-thirds">
+                <figure class="chart-widget__chart">
+                    <canvas id="location_chart" width="600" height="400"></canvas>
+                </figure>
+            </div>
+            <div class="grid__col l-one-third">
+                <figure id="location_legend" class="chart-widget__legend"></figure>
+            </div>
+        </div>
+
+    </div> -->
+</article>

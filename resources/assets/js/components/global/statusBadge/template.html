@@ -1,0 +1,13 @@
+<div v-bind:class="{'is-clickable': isClickable() }" v-on:click="onClick" style="display: inline-block;">
+    <span :class="'badge badge--' + state" v-if="'badge' == mode" v-bind:style="inlineStyles">
+        <i class="fa fa-mouse-pointer fa-flip-horizontal" v-if="! saving && isClickable()" style="color: rgba(255,255,255,0.5)"></i>
+        <i class="fa fa-circle-o-notch fa-spin" v-if="saving"></i>
+        {{ getLabel() }}
+    </span>
+    <div style="display: inline-block; min-width: 110px;" v-if="'select' == mode || 'confirm' == mode">
+        <select v-model="state">
+            <option v-for="(l, c) in states" v-bind:value="c">{{ l }}</option>
+        </select>
+        <a href="#" v-on:click.prevent="onCancel" v-if="'select' == mode"><i class="fa fa-times"></i></a>
+    </div>
+</div>

@@ -1,0 +1,18 @@
+<div>
+    <div class="login-placeholder">
+        <div class="login-placeholder__inner">
+            <div class="login-placeholder__logo"></div>
+            <form v-on:submit.prevent="login" class="form login-placeholder__form">
+                <input type="text" name="email" placeholder="Email address" class="form__input" v-model="email" />
+                <input type="password" name="password" placeholder="Password" class="form__input" v-model="password" />
+                <button type="submit" class="form__button">
+                    <template v-if="loading">
+                        <i class="fa fa-cog fa-spin"></i> Signing in
+                    </template>
+                    <template v-else>Sign in</template>
+                </button>
+            </form>
+        </div>
+    </div>
+    <messenger></messenger>
+</div>

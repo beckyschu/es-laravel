@@ -1,0 +1,15 @@
+{
+    "name": "ipshark/parsehub",
+    "description": "Parsehub crawler for the IP Shark platform.",
+    "version": "v1.0.0",
+    "require": {
+        "dangreaves/parsehub-sdk": "dev-master",
+        "league/csv": "^8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Shark\\Parsehub\\": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}

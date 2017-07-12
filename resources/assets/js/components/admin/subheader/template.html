@@ -1,0 +1,28 @@
+<header class="subheader">
+    <div class="container">
+        <h1 class="subheader__title">{{ title }}</h1>
+        <div class="subheader__right" v-if="shouldShowSearch()">
+            <search></search>
+        </div>
+        <nav class="subheader__nav">
+            <router-link to="/admin/accounts">
+                <i class="fa fa-building" aria-hidden="true"></i>
+                Accounts
+            </router-link>
+            <router-link to="/admin/assets">
+                <i class="fa fa-tags" aria-hidden="true"></i>
+                Assets
+            </router-link>
+            <router-link to="/admin/users">
+                <i class="fa fa-users" aria-hidden="true"></i>
+                Users
+            </router-link>
+            <router-link to="/admin/crawlers" v-if="auth.can('crawlers.manage')">
+                <i class="fa fa-binoculars" aria-hidden="true"></i>
+                Crawlers
+            </router-link>
+            <router-link to="/admin/rules">Rules</router-link>
+            <a href="#" v-on:click.prevent="openCrawlScheduler">Schedule Crawl</a>
+        </nav>
+    </div>
+</header>

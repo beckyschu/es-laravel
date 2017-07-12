@@ -1,0 +1,155 @@
+<div>
+    <template v-if="user">
+        <div class="grid">
+            <div class="grid__col l-one-half">
+                <div class="panel">
+                    <h2 class="subtitle">
+                        <nav class="subtitle__actions">
+                            <a href="#" class="button button--mini button--secondary" v-on:click.prevent="openPasswordResetter()"><i class="fa fa-unlock"></i> Reset password</a>
+                        </nav>
+                        <i class="fa fa-search"></i> Details
+                    </h2>
+                    <div class="alert alert--error" v-if="errors.length">
+                        <ul>
+                            <li v-for="error in errors">{{ error }}</li>
+                        </ul>
+                    </div>
+                    <form class="form" v-on:submit.prevent="update()">
+                        <label for="first_name">First name</label>
+                        <input type="text" name="first_name" v-model="user.first_name" class="form__input" />
+                        <label for="last_name">Last name</label>
+                        <input type="text" name="last_name" v-model="user.last_name" class="form__input" />
+                        <label for="email">Email</label>
+                        <input type="text" name="email" v-model="user.email" class="form__input" />
+                        <label for="password">Password</label>
+                        <input type="password" name="password" v-model="user.password" class="form__input" placeholder="Password" />
+                        <input type="password" name="password_confirm" v-model="user.password_confirm" class="form__input" placeholder="Confirm password" />
+                        <label for="image">Image</label>
+                        <input type="file" name="image" v-on:change="selectImage" class="form__file" />
+                        <label for="role">Role</label>
+                        <div class="form__select">
+                            <select name="role" v-model="user.role">
+                                <option v-for="(roleLabel, roleId) in userRoles" v-bind:value="roleId">{{ roleLabel }}</option>
+                            </select>
+                        </div>
+                        <label for="status">Status</label>
+                        <div class="form__select">
+                            <select name="status" v-model="user.status">
+                                <option v-for="(statusLabel, statusId) in basicStatuses" v-bind:value="statusId">{{ statusLabel }}</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="form__button form__button--spaced">
+                            <template v-if="isSaving">
+                                <i class="fa fa-cog fa-spin"></i> Updating details
+                            </template>
+                            <template v-else>
+                                Update details
+                            </template>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="panel panel--push" v-if="$root.auth.can('users.delete')">
+                    <input type="password" name="delete_password" ref="deletePasswordField" v-model="deletePassword" v-if="showDeletePassword" :disabled="isDeleting" placeholder="Enter your password to confirm..." class="form__input" style="display: inline-block; margin: 0 5px 0 0;" />
+                    <a href="#" class="button button--danger" v-on:click.prevent="deleteUser()">
+                        <template v-if="isDeleting">
+                            <i class="fa fa-cog fa-spin" aria-hidden="true"></i>
+                            Deleting...
+                        </template>
+                        <template v-else>
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                            Delete<template v-if="! showDeletePassword"> this user</template>
+                        </template>
+                    </a>
+                    <a href="#" class="button button--secondary" v-on:click.prevent="cancelDeleteUser()" v-if="showDeletePassword && ! isDeleting">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                        Cancel
+                    </a>
+                    <label v-if="showDeletePassword && ! isDeleting" style="display: block; padding-top: 10px; color: #a94442;">
+                        <input type="checkbox" name="delete_permanent" :value="true" v-model="deletePermanent" />
+                        Permanently delete
+                    </label>
+                </div>
+            </div>
+            <div class="grid__col l-one-half">
+                <div class="panel panel--flush">
+                    <h2 class="subtitle subtitle--collapsible" v-on:click="toggle('accounts')">
+                        <i class="fa fa-building"></i>
+                        Accounts ({{ user.accounts.length }})
+                        <i class="fa fa-minus-square-o" v-if="sectionIsVisible('accounts')"></i>
+                        <i class="fa fa-plus-square-o" v-else></i>
+                    </h2>
+                    <template v-if="sectionIsVisible('accounts')">
+                        <section class="data-summary">
+                            <p>{{ user.accounts.length }} accounts found</p>
+
+                            <nav class="data-summary__actions">
+                                <a href="#" v-on:click.prevent="openAccountAttacher()"><i class="fa fa-paperclip"></i> Attach</a>
+                            </nav>
+                        </section>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th style="width: 60px;">Status</th>
+                                    <th style="width: 100px;">Default</th>
+                                    <th style="width: 100px;">Detach</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-if="user.accounts.length">
+                                    <tr v-for="account in user.accounts">
+                                        <td>
+                                            <router-link :to="{ path: '/admin/accounts/'+account.id }">
+                                                {{ account.name }}
+                                            </router-link>
+                                        </td>
+                                        <td><status-badge :states="basicStatuses" :colors="basicStatusColors" :code="account.status"></status-badge></td>
+                                        <td>
+                                            <template v-if="account.id == isSettingDefaultAccount">
+                                                <i class="fa fa-cog fa-spin"></i> Setting...
+                                            </template>
+                                            <template v-else>
+                                                <template v-if="account.id == user.default_account">
+                                                    <i class="fa fa-check"></i> Default
+                                                </template>
+                                                <template v-else>
+                                                    <a href="#" v-on:click.prevent="setDefaultAccount(account.id)">Set default</a>
+                                                </template>
+                                            </template>
+                                        </td>
+                                        <td>
+                                            <template v-if="account.id == isDetachingAccount">
+                                                <i class="fa fa-cog fa-spin"></i> Detaching...
+                                            </template>
+                                            <template v-else>
+                                                <a href="#" v-on:click.prevent="detachAccount(account.id)">Detach</a>
+                                            </template>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <template v-else>
+                                    <tr>
+                                        <td colspan="4">This user is not attached to any accounts.</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template v-else>
+        <div class="panel panel--flush">
+            <div class="loader">
+                <i class="fa fa-cog fa-spin"></i><br />
+                Fetching user...
+            </div>
+        </div>
+    </template>
+
+    <password-resetter :user="id"></password-resetter>
+
+    <account-attacher :user="id"></account-attacher>
+</div>

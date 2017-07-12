@@ -1,0 +1,41 @@
+<div class="grid">
+    <!-- <div class="filter-bar" v-if="isInitiated">
+        <article v-on:click.prevent="toggleFilter('month')" v-if="months.length">
+            <i class="fa fa-calendar"></i> {{ month.format('MMMM YYYY') }}
+            <nav v-show="filterVisible('month')">
+                <a href="#" v-for="m in months" v-on:click.prevent.stop="setMonth(m)" v-bind:class="{ 'is-active': isMonthActive(m) }">{{ m.format('MMMM YYYY') }}</a>
+            </nav>
+        </article>
+        <article v-on:click.prevent="toggleFilter('asset')" v-if="assets.length">
+            <i class="fa fa-tag"></i> {{ asset ? asset.name : 'All assets' }}
+            <nav v-show="filterVisible('asset')">
+                <a href="#" v-on:click.prevent.stop="setAsset(null)" v-bind:class="{ 'is-active': isAssetActive(null) }">All assets</a>
+                <a href="#" v-for="a in assets" v-on:click.prevent.stop="setAsset(a)" v-bind:class="{ 'is-active': isAssetActive(a) }">{{ a.name }}</a>
+            </nav>
+        </article>
+        <article v-on:click.prevent="generatePdf()">
+            <template v-if="isGeneratingPdf">
+                <i class="fa fa-cog fa-spin"></i> Generating PDF
+            </template>
+            <template v-else>
+                <i class="fa fa-file-pdf-o"></i> Download PDF
+            </template>
+        </article>
+    </div> -->
+
+    <div class="grid__col l-one-third">
+        <discoveries-timeline></discoveries-timeline>
+    </div>
+    <div class="grid__col l-one-third">
+        <sellers-timeline></sellers-timeline>
+    </div>
+    <div class="grid__col l-one-third">
+        <price-timeline></price-timeline>
+    </div>
+    <div class="grid__col l-one-third">
+        <platform-bar></platform-bar>
+    </div>
+    <div class="grid__col l-one-third">
+        <top-sellers></top-sellers>
+    </div>
+</div>

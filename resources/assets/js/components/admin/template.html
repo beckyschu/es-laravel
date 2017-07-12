@@ -1,0 +1,11 @@
+<div>
+    <admin-subheader :auth="auth"></admin-subheader>
+
+    <div class="page">
+        <div class="container">
+            <router-view :auth="auth"></router-view>
+        </div>
+    </div>
+
+    <crawl-scheduler></crawl-scheduler>
+</div>

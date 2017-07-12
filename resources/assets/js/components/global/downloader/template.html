@@ -1,0 +1,23 @@
+<div class="downloader" v-show="isOpen">
+    <audio src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" ref="beeper"></audio>
+    <header class="downloader__header">
+        <a href="#" @click.prevent="clear" class="downloader__clear">
+            <i class="fa fa-trash" aria-hidden="true"></i>
+        </a>
+        <a href="#" @click.prevent="close" class="downloader__close">
+            <i class="fa fa-times" aria-hidden="true"></i>
+        </a>
+        <h1>Downloads</h1>
+    </header>
+    <div class="downloader__content">
+        <nav class="downloader__files" v-if="files.length">
+            <a v-for="file in files" :href="file.path" target="_blank">
+                <i class="fa fa-download" aria-hidden="true"></i>
+                {{ file.name }}
+            </a>
+        </nav>
+        <div class="downloader__empty" v-else>
+            <p>Files will appear here when you request to download them.</p>
+        </div>
+    </div>
+</div>

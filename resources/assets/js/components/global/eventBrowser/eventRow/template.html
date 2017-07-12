@@ -1,0 +1,42 @@
+<tr>
+    <td v-if="showUser">
+        <template v-if="transaction.user">
+            <router-link to="{ path: '/admin/users/'+transaction.user.id }">
+                {{ transaction.user.first_name+' '+transaction.user.last_name }}
+            </router-link>
+        </template>
+        <template v-else>
+            System
+        </template>
+    </td>
+    <td>
+        <template v-if="transaction.account">
+            <router-link to="{ path: '/admin/accounts/'+transaction.account.id }">
+                {{ transaction.account.name }}
+            </router-link>
+        </template>
+        <template v-else>
+            Global
+        </template>
+    </td>
+    <td>{{ transaction.action }}</td>
+    <td>{{ formattedDate }} <span class="muted">{{ fromNow }}</span></td>
+    <td>
+        <template v-if="'undone' == transaction.status">
+            <i class="fa fa-check"></i> Undone
+        </template>
+        <template v-else>
+            <template v-if="transaction.can_undo">
+                <template v-if="isUndoing">
+                    <i class="fa fa-cog fa-spin"></i> Undoing...
+                </template>
+                <template v-else>
+                    <a href="#" v-on:click.prevent="undo()" class="icon-link"><i class="fa fa-undo"></i> <span>Undo</span></a>
+                </template>
+            </template>
+            <template v-else>
+                <span class="muted"><i class="fa fa-ban"></i> Unavailable</span>
+            </template>
+        </template>
+    </td>
+</tr>

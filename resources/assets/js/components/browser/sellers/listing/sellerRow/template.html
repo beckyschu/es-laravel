@@ -1,0 +1,24 @@
+<tr v-bind:class="{'is-selected': selected}">
+    <td class="table__free center">
+        <a href="#" v-on:click.prevent="toggle()">
+            <i class="fa fa-square-o" v-if="! selected"></i>
+            <i class="fa fa-check-square-o" v-cloak v-else></i>
+        </a>
+    </td>
+    <td><status-badge :states="statuses" :colors="statusColors" :code="seller.status"></status-badge></td>
+    <td>
+
+        <status-badge :states="flags" :colors="flagColors" :code="seller.flag"></status-badge></td>
+
+
+    <td><span v-bind:title="seller.last_seen_at">{{ lastSeen }}</span></td>
+    <td><a href="#" v-on:click.prevent="filterDiscoveries">{{ seller.name }}</a></td>
+    <td>{{ seller.discovery_count }}</td>
+    <td><platform-ident :platform="seller.platform"></platform-ident></td>
+    <td v-if="seller.account">{{ seller.account.name }}</td>
+    <td class="center">
+        <a @click.prevent="$router.push('/browser/sellers/'+seller.id)" :href="'/browser/sellers/'+seller.id" class="row-button">
+            <i class="fa fa-info" aria-hidden="true"></i>
+        </a>
+    </td>
+</tr>

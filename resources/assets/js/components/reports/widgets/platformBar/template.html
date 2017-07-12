@@ -1,0 +1,25 @@
+<article class="chart-widget">
+    <h1 class="chart-widget__title">
+        <div class="chart-widget__controls">
+            <select v-model="status">
+                <option v-bind:value="null">All statuses</option>
+                <option v-for="(label, index) in statuses" v-bind:value="index">
+                    {{ label }}
+                </option>
+            </select>
+        </div>
+        Platform
+    </h1>
+    <div class="chart-widget__content">
+
+        <div class="loader" v-if="isLoading">
+            <i class="fa fa-cog fa-spin"></i><br />
+            Generating chart...
+        </div>
+
+        <figure class="chart-widget__chart" v-else>
+            <canvas id="platform_chart" width="600" height="280"></canvas>
+        </figure>
+
+    </div>
+</article>

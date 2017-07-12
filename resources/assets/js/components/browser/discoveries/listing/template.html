@@ -1,0 +1,135 @@
+<div>
+    <div class="panel panel--listing">
+        <section class="data-summary">
+            <p v-if="! initiated">Please wait...</p>
+            <p v-else>TOTAL {{ isFiltered() ? 'RESULTS' : 'LISTINGS' }}: {{ formattedTotal }}</p>
+
+            <nav class="data-summary__actions" v-if="initiated">
+
+                <a href="#" v-on:click.prevent="toggleSelectEntireSet()" class="data-summary__action--transparent" v-if="auth.can('discoveries.update')">
+                    <i class="fa fa-fw fa-check-square-o" v-if="entireSetSelected"></i>
+                    <i class="fa fa-fw fa-square-o" v-else></i>
+                    Select All
+                </a>
+
+                <a href="#" v-on:click.prevent="openEnforcer()" v-if="hasEnforceListings() && this.auth.can('discoveries:write')" class="data-summary__action--grey"><i class="fa fa-bolt"></i> Takedown ({{ enforceCount }})</a>
+
+                <div class="data-summary__action-group" v-if="hasSelectedRows() && auth.can('discoveries.update')">
+                    <a href="#" v-on:click.prevent="quickSetStatus('enforce')" class="data-summary__action--yellow"><i class="fa fa-exclamation-triangle"></i> Enforce</a>
+                    <a href="#" v-on:click.prevent="quickSetStatus('authorized')" class="data-summary__action--green"><i class="fa fa-check"></i> Authorize</a>
+                    <a href="#" v-on:click.prevent="quickSetStatus('rejected')" class="data-summary__action--light-grey"><i class="fa fa-ban"></i> Reject</a>
+                </div>
+
+                <div class="data-summary__action-group">
+                    <a v-on:click.prevent="prevPage()" v-if="1 < page"><i class="fa fa-chevron-left"></i> Previous</a>
+                    <span>Page {{ page }}</span>
+                    <a v-on:click.prevent="nextPage()" v-if="hasMorePages">Next <i class="fa fa-chevron-right"></i></a>
+                </div>
+
+                <div class="data-summary__action-group">
+                    <a href="#" v-on:click.prevent="openSubmitForm()">
+                        <i class="fa fa-plus" aria-hidden="true"></i> Submit Discovery
+                    </a>
+                </div>
+
+                <div class="data-summary__action-group">
+                    <a href="#" v-on:click.prevent="generateCsv()">
+                        <template v-if="isGeneratingCsv">
+                            <i class="fa fa-cog fa-spin"></i> Generating
+                        </template>
+                        <template v-else>
+                            <i class="fa fa-cloud-download" aria-hidden="true"></i> Export
+                        </template>
+                    </a>
+
+                    <a href="#" v-on:click.prevent="openImporter()" v-if="auth.can('discoveries.update')">
+                        <i class="fa fa-cloud-upload" aria-hidden="true"></i> Import
+                    </a>
+                </div>
+
+                <a href="#" v-on:click.prevent="toggleImages()" class="data-summary__action--green" v-if="showImages">
+                    <i class="fa fa-picture-o"></i>
+                </a>
+                <a href="#" v-on:click.prevent="toggleImages()" class="data-summary__action--transparent" v-else>
+                    <i class="fa fa-picture-o"></i>
+                </a>
+            </nav>
+        </section>
+
+        <filter-summary :scope="scope"></filter-summary>
+
+        <table class="table table--with-base-summary table--selectable">
+            <thead>
+                <tr>
+                    <th class="table__free" style="width: 20px;"></th>
+                    <th class="table__free center" style="width: 20px;" v-if="auth.can('discoveries.update')">
+                        <a href="#" v-on:click.prevent="toggleAll()">
+                            <i class="fa fa-check-square-o" v-if="allSelected()"></i>
+                            <i class="fa fa-square-o" v-else></i>
+                        </a>
+                    </th>
+                    <th is="sort-header" :sort="sort" sortKey="status" label="Status" :styles="{'min-width': '100px'}"></th>
+                    <th class="center" is="sort-header" :sort="sort" sortKey="last_seen_at" label="Last Seen"></th>
+                    <th class="center" is="sort-header" :sort="sort" sortKey="title" label="Listing Title"></th>
+                    <th class="center" is="sort-header" :sort="sort" sortKey="platform" label="Platform"></th>
+                    <th class="center" is="sort-header" :sort="sort" sortKey="keyword" label="Search Term"></th>
+                    <th class="center" is="sort-header" :sort="sort" sortKey="sellers.name" label="Seller ID"></th>
+                    <th class="center" is="sort-header" :sort="sort" sortKey="origin" label="Location"></th>
+                    <th class="center" is="sort-header" :sort="sort" sortKey="price" label="Selling Price"></th>
+                    <th class="center" is="sort-header" :sort="sort" sortKey="qty_available" label="Qty Available"></th>
+                    <th class="center" is="sort-header" :sort="sort" sortKey="qty_sold" label="Qty Sold"></th>
+                    <th v-if="! auth.hasAccount()">Account</th>
+                    <template v-if="showImages">
+                        <th>Image</th>
+                    </template>
+                    <th style="width: 60px;" class="center">Info</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-if="loading">
+                    <td colspan="13" class="table__loading">
+                        <i class="fa fa-cog fa-spin"></i><br />
+                        Fetching discoveries...
+                    </td>
+                </tr>
+                <template v-else>
+                    <template v-if="discoveries.length">
+                        <discovery-row v-for="(discovery, key) in discoveries" :auth="auth" :discovery="discovery" :selected="isSelected(discovery.id)" :scope="scope" :show-images.sync="showImages" :rowKey="key + 1 + (perPage * (page - 1))"></discovery-row>
+                    </template>
+                    <template v-else>
+                        <tr>
+                            <td colspan="13" class="table__empty">
+                                <i class="fa fa-bookmark-o"></i><br />
+                                Looks like there's nothing here.
+                            </td>
+                        </tr>
+                    </template>
+                </template>
+            </tbody>
+        </table>
+
+        <section class="data-summary">
+            <p v-if="! initiated">Please wait...</p>
+            <p v-else>TOTAL {{ isFiltered() ? 'RESULTS' : 'LISTINGS' }}: {{ formattedTotal }}</p>
+
+            <nav class="data-summary__actions" v-if="initiated">
+                <div class="data-summary__action-group">
+                    <a href="#" v-on:click.prevent="clearFilters()" v-if="isFiltered()" class="button--danger" style="margin-right: -4px;">Reset</a>
+                    <a href="#" v-on:click.prevent="openFilterSelector()"><i class="fa fa-filter"></i> Filters</a>
+                </div>
+
+                <div class="data-summary__action-group">
+                    <a v-on:click.prevent="prevPage()" v-if="1 < page"><i class="fa fa-chevron-left"></i> Previous</a>
+                    <span>Page {{ page }}</span>
+                    <a v-on:click.prevent="nextPage()" v-if="hasMorePages">Next <i class="fa fa-chevron-right"></i></a>
+                </div>
+            </nav>
+        </section>
+    </div>
+
+    <filter-selector :scope="scope"></filter-selector>
+    <status-updator :scope="scope" :selected="selectedRows" :total="total"></status-updator>
+    <importer></importer>
+    <submit-form></submit-form>
+    <enforcer :count="enforceCount"></enforcer>
+</div>

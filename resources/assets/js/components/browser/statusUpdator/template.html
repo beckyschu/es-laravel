@@ -1,0 +1,62 @@
+<div>
+    <div class="remodal" data-remodal-id="status">
+        <button data-remodal-action="cancel" class="remodal-close"></button>
+
+        <h1 class="subtitle">
+            <template v-if="'discoveries' == type">Mass update status</template>
+            <template v-else>Mass update flags</template>
+        </h1>
+
+        <div class="alert alert--info alert--flush" v-if="isUpdating">
+            <i class="fa fa-cog fa-spin"></i>
+            <template v-if="'discoveries' == type">Updating statuses...</template>
+            <template v-else>Updating flags...</template>
+        </div>
+
+        <template v-else>
+            <div class="alert alert--warning">
+                <i class="fa fa-exclamation-triangle"></i>
+                <template v-if="'discoveries' == type">
+                    <template v-if="selected.length">
+                        This action will update the status for <strong>{{ selected.length }} selected discoveries</strong>.
+                    </template>
+                    <template v-else>
+                        This action will update the status for <strong>all {{ total }} discoveries</strong> displayed in the current listing.
+                    </template>
+                </template>
+                <template v-else>
+                    <template v-if="selected.length">
+                        This action will update the flag for <strong>{{ selected.length }} selected sellers</strong>.
+                    </template>
+                    <template v-else>
+                        This action will update the flag for <strong>all {{ total }} sellers</strong> displayed in the current listing.
+                    </template>
+                </template>
+            </div>
+
+            <form v-on:submit.prevent="update()" method="post" class="form">
+                <template v-if="'discoveries' == type">
+                    <div class="form__select">
+                        <label for="status">Status</label>
+                        <select name="status" v-model="status">
+                            <option value=""></option>
+                            <option v-for="value in scope.filterOptions.status" v-bind:value="value.id">{{ value.label }}</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="form__button form__button--spaced">Update status</button>
+                </template>
+                <template v-else>
+                    <div class="form__select">
+                        <label for="status">Flag</label>
+                        <select name="status" v-model="status">
+                            <option value=""></option>
+                            <option v-for="(label, value) in flags" v-bind:value="value">{{ label }}</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="form__button form__button--spaced">Update flags</button>
+                </template>
+                <a href="#" data-remodal-action="cancel" class="form__secondary">Cancel</a>
+            </form>
+        </template>
+    </div>
+</div>

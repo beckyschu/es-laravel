@@ -1,0 +1,35 @@
+version: "3.0"
+services:
+  shark_db:
+    build:
+      context: .
+      dockerfile: docker/db.Dockerfile
+    ports:
+      - "3306:3306"
+  shark_redis:
+    image: "redis"
+    ports:
+      - "6379:6379"
+  shark_worker:
+    build:
+      context: .
+      dockerfile: docker/worker.Dockerfile
+    links:
+      - shark_redis
+      - shark_db
+    ports:
+      - "6001:6001"
+    volumes:
+      - .:/home/ipshark
+  shark_main:
+    build:
+      context: .
+      dockerfile: docker/main.Dockerfile
+    links:
+      - shark_db
+      - shark_redis
+      - shark_worker
+    ports:
+      - "80:80"
+    volumes:
+      - .:/home/ipshark

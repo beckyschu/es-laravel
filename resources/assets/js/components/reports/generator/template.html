@@ -1,0 +1,179 @@
+<div class="grid">
+    <div class="grid__col l-full" v-if="loadingReport">
+        <p>
+            <i class="fa fa-cog fa-spin fa-fw"></i>
+            Loading report...
+        </p>
+    </div>
+    <template v-else>
+        <div class="grid__col l-one-third">
+            <div class="panel">
+                <h2 class="subtitle">Report Details</h2>
+                <form class="form">
+                    <div class="grid grid--tight">
+                        <div class="grid__col l-one-half">
+                            <label>Client Name</label>
+                            <input type="text" v-model="report.details.name" class="form__input form__input--full" />
+                        </div>
+                        <div class="grid__col l-one-half">
+                            <label>Date</label>
+                            <input type="text" v-model="report.details.date" class="form__input form__input--full" />
+                        </div>
+                        <div class="grid__col l-one-half">
+                            <label>Range</label>
+                            <input type="text" v-model="report.details.range" class="form__input form__input--full" />
+                        </div>
+                        <div class="grid__col l-one-half">
+                            <label>Scan Type</label>
+                            <input type="text" v-model="report.details.scanType" class="form__input form__input--full" />
+                        </div>
+                    </div>
+                </form>
+
+                <h2 class="subtitle">Infringement Activity - Removed</h2>
+                <form class="form">
+                    <div class="grid grid--tight">
+                        <div class="grid__col l-one-half">
+                            <label>Marketplaces</label>
+                            <input type="text" v-model="report.activity.marketplaces" class="form__input form__input--full" />
+                        </div>
+                        <div class="grid__col l-one-half">
+                            <label>Social Media</label>
+                            <input type="text" v-model="report.activity.socialMedia" class="form__input form__input--full" />
+                        </div>
+                        <div class="grid__col l-one-half">
+                            <label>Websites</label>
+                            <input type="text" v-model="report.activity.websites" class="form__input form__input--full" />
+                        </div>
+                        <div class="grid__col l-one-half">
+                            <label>Search Engines</label>
+                            <input type="text" v-model="report.activity.searchEngines" class="form__input form__input--full" />
+                        </div>
+                        <div class="grid__col l-one-half">
+                            <label>Radial %</label>
+                            <input type="text" v-model="report.activity.radial" class="form__input form__input--full" />
+                        </div>
+                    </div>
+                </form>
+
+                <h2 class="subtitle">Closed Platforms</h2>
+                <form class="form">
+                    <div class="grid grid--tight">
+                        <div class="grid__col l-one-half">
+                            <label>Chinese Marketplaces</label>
+                            <input type="text" v-model="report.closedPlatforms.chineseMarketplaces" class="form__input form__input--full" />
+                        </div>
+                        <div class="grid__col l-one-half">
+                            <label>Domestic Marketplaces</label>
+                            <input type="text" v-model="report.closedPlatforms.domesticMarketplaces" class="form__input form__input--full" />
+                        </div>
+                        <div class="grid__col l-one-half">
+                            <label>International Marketplaces</label>
+                            <input type="text" v-model="report.closedPlatforms.internationalMarketplaces" class="form__input form__input--full" />
+                        </div>
+                        <div class="grid__col l-one-half">
+                            <label>Social Media Platforms</label>
+                            <input type="text" v-model="report.closedPlatforms.socialMediaPlatforms" class="form__input form__input--full" />
+                        </div>
+                        <div class="grid__col l-one-half">
+                            <label>3rd Party Websites</label>
+                            <input type="text" v-model="report.closedPlatforms.thirdPartyWebsites" class="form__input form__input--full" />
+                        </div>
+                    </div>
+                </form>
+
+                <h2 class="subtitle">Closed Listings</h2>
+                <form class="form">
+                    <div class="grid grid--tight">
+                        <div class="grid__col l-full">
+                            <label>Chart Range</label>
+                            <input type="text" v-model="report.closedListings.chartData[0]" class="form__input form__input--inline" style="width: 15%;" />
+                            <input type="text" v-model="report.closedListings.chartData[1]" class="form__input form__input--inline" style="width: 15%;" />
+                            <input type="text" v-model="report.closedListings.chartData[2]" class="form__input form__input--inline" style="width: 15%;" />
+                            <input type="text" v-model="report.closedListings.chartData[3]" class="form__input form__input--inline" style="width: 15%;" />
+                            <input type="text" v-model="report.closedListings.chartData[4]" class="form__input form__input--inline" style="width: 15%;" />
+                            <input type="text" v-model="report.closedListings.chartData[5]" class="form__input form__input--inline" style="width: 15%;" />
+                        </div>
+                        <div class="grid__col l-full">
+                            <label>Date Range</label>
+                            <input type="text" v-model="report.closedListings.chartLabels[0]" class="form__input form__input--inline" style="width: 15%;" />
+                            <input type="text" v-model="report.closedListings.chartLabels[1]" class="form__input form__input--inline" style="width: 15%;" />
+                            <input type="text" v-model="report.closedListings.chartLabels[2]" class="form__input form__input--inline" style="width: 15%;" />
+                            <input type="text" v-model="report.closedListings.chartLabels[3]" class="form__input form__input--inline" style="width: 15%;" />
+                            <input type="text" v-model="report.closedListings.chartLabels[4]" class="form__input form__input--inline" style="width: 15%;" />
+                            <input type="text" v-model="report.closedListings.chartLabels[5]" class="form__input form__input--inline" style="width: 15%;" />
+                        </div>
+                        <div class="grid__col l-full">
+                            <label>Secondary Labels</label>
+                            <input type="text" v-model="report.closedListings.secondaryLabels[0]" class="form__input form__input--inline" style="width: 15%;" />
+                            <input type="text" v-model="report.closedListings.secondaryLabels[1]" class="form__input form__input--inline" style="width: 15%;" />
+                            <input type="text" v-model="report.closedListings.secondaryLabels[2]" class="form__input form__input--inline" style="width: 15%;" />
+                            <input type="text" v-model="report.closedListings.secondaryLabels[3]" class="form__input form__input--inline" style="width: 15%;" />
+                            <input type="text" v-model="report.closedListings.secondaryLabels[4]" class="form__input form__input--inline" style="width: 15%;" />
+                            <input type="text" v-model="report.closedListings.secondaryLabels[5]" class="form__input form__input--inline" style="width: 15%;" />
+                        </div>
+                    </div>
+                </form>
+
+                <h2 class="subtitle">Report Summary</h2>
+                <form class="form">
+                    <div class="grid grid--tight">
+                        <div class="grid__col l-one-half">
+                            <label>Discovered</label>
+                            <input type="text" v-model="report.summary.discovered" class="form__input form__input--full" />
+                        </div>
+                        <div class="grid__col l-one-half">
+                            <label>Closed</label>
+                            <input type="text" v-model="report.summary.closed" class="form__input form__input--full" />
+                        </div>
+                        <div class="grid__col l-one-half">
+                            <label>Pending</label>
+                            <input type="text" v-model="report.summary.pending" class="form__input form__input--full" />
+                        </div>
+                        <div class="grid__col l-one-half">
+                            <label>All Time Removed</label>
+                            <input type="text" v-model="report.summary.allTimeRemoved" class="form__input form__input--full" />
+                        </div>
+                    </div>
+                </form>
+
+                <h2 class="subtitle">Enforcement Breakdown</h2>
+                <form class="form">
+                    <div class="grid grid--tight">
+                        <template v-for="n in 8">
+                            <div class="grid__col l-one-half">
+                                <label v-if="1 == n">Marketplaces</label>
+                                <input type="text" v-model="report.breakdown.labels[n-1]" class="form__input form__input--full" />
+                            </div>
+                            <div class="grid__col l-one-half">
+                                <label v-if="1 == n"># Takedowns</label>
+                                <input type="text" v-model="report.breakdown.data[n-1]" class="form__input form__input--full" />
+                            </div>
+                        </template>
+                    </div>
+                </form>
+
+                <h2 class="subtitle">Upload Client Logo</h2>
+                <dropzone
+                    id="logo"
+                    url="/api/reports/logos"
+                    :useFontAwesome="true"
+                    :autoProcessQueue="true"
+                    :maxNumberOfFiles="1"
+                    :headers="{ 'Authorization': 'Bearer ' + auth.token, 'X-Account': auth.account.id }"
+                    @vdropzone-success="onLogoUploadSuccess"
+                ></dropzone>
+
+                <div style="text-align: center; padding-top: 20px;">
+                    <a href="#" @click.prevent="saveReport" class="button">
+                        <template v-if="savingReport">Saving report...</template>
+                        <template v-else>Save Report</template>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="grid__col l-two-thirds">
+            <previewer :report="report" :charts="charts"></previewer>
+        </div>
+    </template>
+</div>

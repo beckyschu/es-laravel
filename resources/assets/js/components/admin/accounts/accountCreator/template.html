@@ -1,0 +1,194 @@
+<div>
+    <div class="remodal" data-remodal-id="account_creator">
+        <button data-remodal-action="cancel" class="remodal-close"></button>
+
+        <h1 class="subtitle"><i class="fa fa-plus"></i> Create account</h1>
+
+        <ul class="timeline">
+            <template v-for="(step, key) in steps">
+                <li v-bind:class="{ 'is-complete': isStepComplete(key), 'is-active': isStepActive(key) }">{{ step }}</li>
+            </template>
+        </ul>
+
+        <div class="alert alert--error" v-if="errors.length">
+            <ul>
+                <li v-for="error in errors">{{ error }}</li>
+            </ul>
+        </div>
+
+        <form class="form" v-on:submit.prevent="create()" v-if="isStepActive('details')">
+            <label for="name">Account name</label>
+            <input type="text" name="name" v-model="accountData.name" class="form__input" />
+            <label for="status">Status</label>
+            <div class="form__select">
+                <select name="status" v-model="accountData.status">
+                    <option v-for="(statusLabel, statusId) in accountStatuses" v-bind:value="statusId">{{ statusLabel }}</option>
+                </select>
+            </div>
+            <button type="submit" class="form__button form__button--spaced" v-if="account">
+                <template v-if="isUpdating">
+                    <i class="fa fa-cog fa-spin"></i> Updating account
+                </template>
+                <template v-else>
+                    Update account
+                </template>
+            </button>
+            <button type="submit" class="form__button form__button--spaced" v-else>
+                <template v-if="isCreating">
+                    <i class="fa fa-cog fa-spin"></i> Creating account
+                </template>
+                <template v-else>
+                    Create account
+                </template>
+            </button>
+        </form>
+
+        <template v-if="isStepActive('users')">
+
+            <form class="form" v-if="'create' == activeUserForm" v-on:submit.prevent="createUser()">
+                <label for="first_name">First name</label>
+                <input type="text" name="first_name" v-model="userData.first_name" class="form__input" />
+                <label for="last_name">Last name</label>
+                <input type="text" name="last_name" v-model="userData.last_name" class="form__input" />
+                <label for="email">Email</label>
+                <p class="form__info">Upon creation, an email will be sent to this address containing the users password.</p>
+                <input type="text" name="email" v-model="userData.email" class="form__input" />
+                <label for="password">Password (optional)</label>
+                <p class="form__info">If you leave this empty, a password will be automatically generated.</p>
+                <input type="password" name="password" v-model="userData.password" class="form__input" placeholder="Password" />
+                <input type="password" name="password_confirm" v-model="userData.password_confirm" class="form__input" placeholder="Confirm password" />
+                <label for="image">Image</label>
+                <input type="file" name="image" v-on:change="selectImage" class="form__file" />
+                <label for="role">Role</label>
+                <div class="form__select">
+                    <select name="role" v-model="userData.role">
+                        <option value=""></option>
+                        <option v-for="(roleLabel, roleId) in userRoles" v-bind:value="roleId">{{ roleLabel }}</option>
+                    </select>
+                </div>
+                <label for="status">Status</label>
+                <div class="form__select">
+                    <select name="status" v-model="userData.status">
+                        <option v-for="(statusLabel, statusId) in userStatuses" v-bind:value="statusId">{{ statusLabel }}</option>
+                    </select>
+                </div>
+                <button type="submit" class="form__button form__button--spaced">
+                    <template v-if="isCreatingUser">
+                        <i class="fa fa-cog fa-spin"></i> Creating user
+                    </template>
+                    <template v-else>
+                        Create user
+                    </template>
+                </button>
+                <button v-if="! isCreatingUser" v-on:click.prevent="activeUserForm = null" class="form__button form__button--spaced button--secondary">Cancel</button>
+            </form>
+
+            <form class="form" v-if="'attach' == activeUserForm" v-on:submit.prevent="attachUser()">
+                <label for="user">Select a user</label>
+                <div class="form__select" v-if="attachableUsers.length">
+                    <select name="user" v-model="attachableUser">
+                        <option value=""></option>
+                        <option v-for="user in attachableUsers" v-bind:value="user.id">{{ user.first_name+' '+user.last_name }}</option>
+                    </select>
+                </div>
+                <p v-else><i class="fa fa-cog fa-spin"></i> Loading attachable users...</p>
+                <button type="submit" class="form__button form__button--spaced">
+                    <template v-if="isAttachingUser">
+                        <i class="fa fa-cog fa-spin"></i> Attaching user
+                    </template>
+                    <template v-else>
+                        Attach user
+                    </template>
+                </button>
+                <button v-if="! isAttachingUser" v-on:click.prevent="activeUserForm = null" class="form__button form__button--spaced button--secondary">Cancel</button>
+            </form>
+
+            <template v-if="null == activeUserForm">
+                <table class="table" style="margin-top: 25px;">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Attached users</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template v-if="users.length">
+                            <tr v-for="user in users">
+                                <td>{{ user.first_name+' '+user.last_name }}</td>
+                                <td>{{ user.email }}</td>
+                            </tr>
+                        </template>
+                        <tr v-else>
+                            <td colspan="2">There are no attached users yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <a href="#" v-on:click.prevent="activeUserForm = 'create'" class="button button--secondary"><i class="fa fa-plus"></i> Create new user</a>
+                <a href="#" v-on:click.prevent="activeUserForm = 'attach'" class="button button--secondary"><i class="fa fa-paperclip"></i> Attach existing user</a>
+
+                <div style="float: right;">
+                    <a href="#" v-on:click.prevent="setStep('details')" class="button button--secondary"><i class="fa fa-long-arrow-left"></i></a>
+                    <a href="#" v-on:click.prevent="advanceStep('users', 'assets')" class="button">Next <i class="fa fa-long-arrow-right"></i></a>
+                </div>
+            </template>
+
+        </template>
+
+        <template v-if="isStepActive('assets')">
+
+            <form class="form" v-if="'create' == activeAssetForm" v-on:submit.prevent="createAsset()">
+                <label for="name">Asset name</label>
+                <input type="text" name="name" v-model="assetData.name" class="form__input" />
+                <label for="description">Description</label>
+                <input type="text" name="description" v-model="assetData.description" class="form__input" />
+                <label for="keywords">Keywords</label>
+                <multiselect v-model="assetData.keywords" :options="assetData.keywords" :multiple="true" :taggable="true" @tag="addKeywordTag" placeholder="Add a keyword"></multiselect>
+                <label for="counter_keywords">Counter Keywords</label>
+                <multiselect v-model="assetData.counter_keywords" :options="assetData.counter_keywords" :multiple="true" :taggable="true" @tag="addCounterKeywordTag" placeholder="Add a keyword"></multiselect>
+                <label for="status">Status</label>
+                <div class="form__select">
+                    <select name="status" v-model="assetData.status">
+                        <option v-for="(statusLabel, statusId) in assetStatuses" v-bind:value="statusId">{{ statusLabel }}</option>
+                    </select>
+                </div>
+                <button type="submit" class="form__button form__button--spaced">
+                    <template v-if="isCreatingAsset">
+                        <i class="fa fa-cog fa-spin"></i> Creating asset
+                    </template>
+                    <template v-else>
+                        Create asset
+                    </template>
+                </button>
+                <button v-if="! isCreatingAsset" v-on:click.prevent="activeAssetForm = null" class="form__button form__button--spaced button--secondary">Cancel</button>
+            </form>
+
+            <template v-if="null == activeAssetForm">
+                <table class="table" style="margin-top: 25px;">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Attached assets</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template v-if="assets.length">
+                            <tr v-for="asset in assets">
+                                <td>{{ asset.name }}</td>
+                                <td>{{ asset.description }}</td>
+                            </tr>
+                        </template>
+                        <tr v-else>
+                            <td colspan="2">There are no attached assets yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <a href="#" v-on:click.prevent="activeAssetForm = 'create'" class="button button--secondary"><i class="fa fa-plus"></i> Create new asset</a>
+                <div style="float: right">
+                    <a href="#" v-on:click.prevent="setStep('users')" class="button button--secondary"><i class="fa fa-long-arrow-left"></i></a>
+                    <a href="#" v-on:click.prevent="complete()" class="button"><i class="fa fa-check"></i> Complete</a>
+                </div>
+            </template>
+
+        </template>
+    </div>
+</div>

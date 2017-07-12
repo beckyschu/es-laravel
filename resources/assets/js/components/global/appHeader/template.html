@@ -1,0 +1,31 @@
+<header class="header" id="top">
+    <div class="header-profile">
+        <img v-bind:src="profileImageUrl" class="header-profile__image" />
+        <span class="header-profile__name">{{ name }}</span>
+        <account-switcher :auth="auth" v-if="auth.account"></account-switcher>
+    </div>
+    <nav class="header-nav">
+        <router-link to="/dashboard">
+            <i class="fa fa-home fa-fw fa-2x"></i> Home
+        </router-link>
+        <router-link to="/browser" v-on:click="clearFilters()" v-if="auth.can('discoveries:read')">
+            <i class="fa fa-flag-o fa-fw fa-2x"></i> Discoveries
+        </router-link>
+        <router-link to="/reports">
+            <i class="fa fa-pie-chart fa-fw fa-2x"></i> Report
+        </router-link>
+    </nav>
+    <nav class="header-nav">
+        <router-link to="/me">
+            <i class="fa fa-cog fa-fw fa-2x"></i> Settings
+        </router-link>
+        <router-link to="/admin" v-if="auth.can('manage_admin')">
+            <i class="fa fa-wrench fa-fw fa-2x"></i> Admin
+        </router-link>
+        <a href="#" v-on:click.prevent="logout()">
+            <i class="fa fa-sign-out fa-fw fa-2x"></i> Logout
+        </a>
+    </nav>
+
+    <div class="header__logo">IP Shark</div>
+</header>

@@ -1,0 +1,27 @@
+<div>
+    <div class="remodal" data-remodal-id="parsehub_setting_editor">
+        <button data-remodal-action="cancel" class="remodal-close"></button>
+
+        <template v-if="setting">
+            <h1 class="subtitle">
+                <img src="/images/parsehub_logo.png" style="width: 16px; height: 16px; display: inline-block; vertical-align: top; margin-right: 3px; line-height: 15px;" />
+                ParseHub Settings for {{ setting.crawler.platform }}
+            </h1>
+
+            <form class="form" v-on:submit.prevent="update()">
+                <label for="start_template">Start Template</label>
+                <input type="text" name="start_template" v-model="setting.start_template" class="form__input" />
+                <label for="start_url">Start URL</label>
+                <input type="text" name="start_url" v-model="setting.start_url" class="form__input" />
+                <button type="submit" class="form__button form__button--spaced">
+                    <template v-if="isUpdating">
+                        <i class="fa fa-cog fa-spin"></i> Updating settings
+                    </template>
+                    <template v-else>
+                        Update settings
+                    </template>
+                </button>
+            </form>
+        </template>
+    </div>
+</div>
