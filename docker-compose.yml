@@ -21,15 +21,42 @@ services:
       - "6001:6001"
     volumes:
       - .:/home/ipshark
-  shark_main:
+  shark_app:
     build:
       context: .
-      dockerfile: docker/main.Dockerfile
+      dockerfile: docker/app.Dockerfile
+    ports:
+      - "22:22"
+    tty: true
+    restart: always
+    volumes:
+      - .:/home/ipshark
+  shark_web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    depends_on:
+      - shark_app
     links:
+      - shark_php_fpm
       - shark_db
-      - shark_redis
-      - shark_worker
+    restart: always
+    volumes:
+      - .:/var/log/nginx
+      - .:/etc/nginx/sites-available
+      - .:/home/ipshark
     ports:
       - "80:80"
+      - "443:443"
+  shark_php_fpm:
+    build:
+      context: .
+      dockerfile: docker/php.Dockerfile
+    depends_on:
+      - shark_app
+    links:
+      - shark_db
+    expose:
+      - "9000"
     volumes:
       - .:/home/ipshark

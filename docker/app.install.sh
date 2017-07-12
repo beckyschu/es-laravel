@@ -12,6 +12,10 @@ echo '[*] Creating config file'
 cp docker/.env .env
 echo
 
+echo '[*] Clearing cache'
+php artisan cache:clear
+echo
+
 echo '[*] Generating encryption key'
 php artisan key:generate
 echo
