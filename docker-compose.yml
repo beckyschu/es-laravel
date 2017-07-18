@@ -6,21 +6,6 @@ services:
       dockerfile: docker/db.Dockerfile
     ports:
       - "3306:3306"
-  shark_redis:
-    image: "redis"
-    ports:
-      - "6379:6379"
-  shark_worker:
-    build:
-      context: .
-      dockerfile: docker/worker.Dockerfile
-    links:
-      - shark_redis
-      - shark_db
-    ports:
-      - "6001:6001"
-    volumes:
-      - .:/home/ipshark
   shark_app:
     build:
       context: .
@@ -28,7 +13,35 @@ services:
     ports:
       - "22:22"
     tty: true
-    restart: always
+    volumes:
+      - .:/home/ipshark
+  shark_redis:
+    image: "redis"
+    ports:
+      - "6379:6379"
+    depends_on:
+      - shark_php_fpm
+  shark_beanstalkd:
+    build:
+      context: .
+      dockerfile: docker/beanstalkd.Dockerfile
+    ports:
+      - "11300:11300"
+    privileged: true
+    depends_on:
+      - shark_php_fpm
+  shark_worker:
+    build:
+      context: .
+      dockerfile: docker/worker.Dockerfile
+    depends_on:
+      - shark_app
+    links:
+      - shark_beanstalkd
+      - shark_redis
+      - shark_db
+    ports:
+      - "6001:6001"
     volumes:
       - .:/home/ipshark
   shark_web:

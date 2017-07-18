@@ -2,7 +2,7 @@
   "name": "ipshark-platform",
   "version": "1.0.0",
   "description": "Frontend and API for IP Shark platform",
-  "repository": "git@github.com:opmonk/dan-laravel.git",
+  "repository": "git@github.com:beckyschu/es-laravel.git",
   "author": "Dan Greaves <dan@dangreaves.com>",
   "licence": "UNLICENSED",
   "private": true,
